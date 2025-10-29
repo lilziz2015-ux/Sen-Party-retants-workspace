@@ -4,27 +4,120 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Login — Sen Party Rentals Pro</title>
-<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="assets/style.css" />
+
+<style>
+  :root {
+    --brand: #0078ff;
+    --brand-dark: #004c99;
+    --muted: #6b7280;
+    --bg: #f8fafc;
+    --white: #fff;
+  }
+
+  body.login-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    background: var(--bg);
+    font-family: "Segoe UI", sans-serif;
+  }
+
+  .login-card {
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    padding: 2rem;
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
+  }
+
+  .login-logo {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    margin-bottom: 0.3rem;
+    color: var(--brand-dark);
+  }
+
+  p.muted {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-top: 0.4rem;
+  }
+
+  input {
+    width: 100%;
+    padding: 0.8rem;
+    margin-top: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+
+  .btn-primary, .btn {
+    width: 100%;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    margin-top: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-size: 1rem;
+  }
+
+  .btn-primary {
+    background: var(--brand);
+    color: #fff;
+  }
+
+  .btn-primary:hover {
+    background: var(--brand-dark);
+  }
+
+  .btn {
+    background: #e5e7eb;
+  }
+
+  .btn:hover {
+    background: #d1d5db;
+  }
+
+  #loginMsg {
+    min-height: 1.2rem;
+    margin-top: 0.8rem;
+    font-size: 0.9rem;
+  }
+</style>
 </head>
+
 <body class="login-page">
+  <div class="login-card">
+    <img src="02B58D79-6737-47EA-8099-73006879E55A Small.jpeg" alt="Logo" class="login-logo" />
+    <h1>Sen Party Rentals Pro</h1>
+    <p class="muted">Sign in to manage your bookings and invoices</p>
 
-<div class="login-card">
-  <img src="02B58D79-6737-47EA-8099-73006879E55A Small.jpeg" alt="Logo" class="login-logo" />
-  <h1>Sen Party Rentals Pro</h1>
-  <p class="muted">Sign in to manage your bookings and invoices</p>
+    <!-- Email / Password -->
+    <input id="loginEmail" type="email" placeholder="Email" autocomplete="email" />
+    <input id="loginPass" type="password" placeholder="Password" autocomplete="current-password" />
+    <button id="loginBtn" class="btn-primary">Login</button>
 
-  <!-- Email / Password login -->
-  <input id="loginEmail" type="email" placeholder="Email" />
-  <input id="loginPass" type="password" placeholder="Password" />
-  <button id="loginBtn" class="btn-primary">Login</button>
+    <p class="muted">or</p>
 
-  <p class="muted">or</p>
+    <!-- Google Login -->
+    <button id="googleBtn" class="btn">🔐 Sign in with Google</button>
 
-  <!-- Google login -->
-  <button id="googleBtn" class="btn">🔐 Sign in with Google</button>
-
-  <p class="muted" id="loginMsg"></p>
-</div>
+    <p id="loginMsg" class="muted"></p>
+  </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -41,30 +134,48 @@ const app = initializeApp(FB_CFG);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
+// Elements
 const emailEl = document.getElementById("loginEmail");
 const passEl = document.getElementById("loginPass");
 const msgEl = document.getElementById("loginMsg");
+const loginBtn = document.getElementById("loginBtn");
+const googleBtn = document.getElementById("googleBtn");
 
-document.getElementById("loginBtn").onclick = async () => {
-  msgEl.textContent = "Signing in …";
+// Helper function to show messages
+function showMsg(text, isError = false) {
+  msgEl.textContent = text;
+  msgEl.style.color = isError ? "red" : "#555";
+}
+
+// Email / Password Login
+loginBtn.onclick = async () => {
+  showMsg("Signing in …");
+  const email = emailEl.value.trim();
+  const pass = passEl.value.trim();
+  if (!email || !pass) return showMsg("Please enter your email and password.", true);
+
   try {
-    await signInWithEmailAndPassword(auth, emailEl.value, passEl.value);
+    await signInWithEmailAndPassword(auth, email, pass);
+    showMsg("Login successful! Redirecting...");
     window.location.href = "index.html";
   } catch (e) {
-    msgEl.textContent = "Login failed: " + e.message;
+    showMsg("Login failed: " + e.message, true);
   }
 };
 
-document.getElementById("googleBtn").onclick = async () => {
-  msgEl.textContent = "Connecting Google …";
+// Google Login
+googleBtn.onclick = async () => {
+  showMsg("Connecting to Google …");
   try {
     await signInWithPopup(auth, provider);
+    showMsg("Login successful! Redirecting...");
     window.location.href = "index.html";
   } catch (e) {
-    msgEl.textContent = "Google login failed.";
+    showMsg("Google login failed: " + e.message, true);
   }
 };
 
+// Auto redirect if already logged in
 onAuthStateChanged(auth, (user) => {
   if (user) window.location.href = "index.html";
 });

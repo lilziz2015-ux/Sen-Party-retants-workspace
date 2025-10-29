@@ -4,12 +4,161 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Settings — Sen Party Rentals Pro</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
+<link rel="stylesheet" href="assets/style.css">
 
+<style>
+  :root {
+    --brand: #0078ff;
+    --brand-dark: #004c99;
+    --muted: #6b7280;
+    --bg: #f8fafc;
+    --white: #fff;
+  }
+
+  body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: #1f2937;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 260px;
+    background: var(--white);
+    border-right: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    padding: 1rem;
+    transition: transform 0.3s ease;
+    z-index: 1000;
+  }
+
+  .sidebar.hidden { transform: translateX(-100%); }
+
+  .sidebar .logo { text-align: center; }
+  .sidebar img { width: 80px; border-radius: 50%; margin-bottom: 0.5rem; }
+
+  .sidebar nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-top: 1rem;
+  }
+
+  .sidebar nav a {
+    text-decoration: none;
+    color: #1f2937;
+    padding: 0.6rem 0.8rem;
+    border-radius: 6px;
+    transition: 0.2s;
+  }
+
+  .sidebar nav a:hover,
+  .sidebar nav a.active {
+    background: var(--brand-light, #e6f0ff);
+    color: var(--brand-dark);
+    font-weight: 600;
+  }
+
+  /* Main */
+  .main {
+    flex: 1;
+    margin-left: 260px;
+    padding: 2rem;
+  }
+
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+
+  .menu-toggle {
+    display: none;
+    background: var(--brand);
+    color: #fff;
+    border: none;
+    padding: 0.6rem 0.9rem;
+    border-radius: 6px;
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+
+  .muted { color: var(--muted); }
+
+  .card {
+    background: var(--white);
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+
+  .form-grid .wide { grid-column: 1 / -1; }
+
+  label { font-weight: 600; display: block; margin-bottom: 0.3rem; }
+  input, textarea, select {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+  }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .btn-primary {
+    background: var(--brand);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 0.7rem 1.2rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+  }
+
+  .btn-primary:hover { background: var(--brand-dark); }
+
+  footer {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 2rem;
+  }
+
+  @media (max-width: 900px) {
+    .main { margin-left: 0; }
+    .menu-toggle { display: block; margin-bottom: 1rem; }
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.show { transform: translateX(0); }
+  }
+</style>
+</head>
+
+<body>
 <!-- Sidebar -->
-<aside class="sidebar">
+<aside class="sidebar hidden" id="sidebar">
   <div class="logo">
     <img src="02B58D79-6737-47EA-8099-73006879E55A Small.jpeg" alt="Logo">
     <h2>Sen Party Rentals Pro</h2>
@@ -28,38 +177,26 @@
 <!-- Main -->
 <main class="main">
   <header class="topbar">
+    <button class="menu-toggle" id="menuToggle">☰</button>
     <div>
       <h1>Settings</h1>
       <p class="muted">Customize your business information, appearance, and preferences.</p>
     </div>
   </header>
 
+  <!-- Business Info -->
   <section class="card">
     <h2>Business Information</h2>
     <div class="form-grid">
-      <div>
-        <label>Business Name</label>
-        <input id="bizName" placeholder="Sen Party Rentals">
-      </div>
-      <div>
-        <label>Owner Name</label>
-        <input id="ownerName" placeholder="Mamadou Samb">
-      </div>
-      <div>
-        <label>Email</label>
-        <input id="bizEmail" type="email" placeholder="senmoonbounce@gmail.com">
-      </div>
-      <div>
-        <label>Phone</label>
-        <input id="bizPhone" placeholder="571-719-9575">
-      </div>
-      <div class="wide">
-        <label>Address</label>
-        <input id="bizAddress" placeholder="11910 Bradley Forest Rd, Manassas, VA">
-      </div>
+      <div><label>Business Name</label><input id="bizName" placeholder="Sen Party Rentals"></div>
+      <div><label>Owner Name</label><input id="ownerName" placeholder="Mamadou Samb"></div>
+      <div><label>Email</label><input id="bizEmail" type="email" placeholder="senmoonbounce@gmail.com"></div>
+      <div><label>Phone</label><input id="bizPhone" placeholder="571-719-9575"></div>
+      <div class="wide"><label>Address</label><input id="bizAddress" placeholder="11910 Bradley Forest Rd, Manassas, VA"></div>
     </div>
   </section>
 
+  <!-- Branding -->
   <section class="card">
     <h2>Branding & Appearance</h2>
     <div class="form-grid">
@@ -70,52 +207,36 @@
       </div>
       <div>
         <label>Theme Color</label>
-        <input type="color" id="themeColor" value="#0b67a3">
-      </div>
-    </div>
-  </section>
-<section class="card">
-  <h2>Notifications</h2>
-  <p class="muted" style="margin:-4px 0 10px">
-    Email uses <b>EmailJS</b> (no server needed). SMS uses an optional <b>webhook URL</b> (Zapier/Make or Twilio Function).
-  </p>
-  <div class="form-grid">
-    <div>
-      <label>EmailJS Service ID</label>
-      <input id="ejService" placeholder="service_xxx">
-    </div>
-    <div>
-      <label>EmailJS Template ID</label>
-      <input id="ejTemplate" placeholder="template_xxx">
-    </div>
-    <div>
-      <label>EmailJS Public Key</label>
-      <input id="ejPublic" placeholder="YOUR_PUBLIC_KEY">
-    </div>
-    <div class="wide">
-      <label>SMS Webhook URL (optional)</label>
-      <input id="smsWebhook" placeholder="https://hooks.zapier.com/... or your Twilio Function URL">
-    </div>
-  </div>
-</section>
-  <section class="card">
-    <h2>Invoice Settings</h2>
-    <div class="form-grid">
-      <div>
-        <label>Invoice Prefix</label>
-        <input id="invoicePrefix" placeholder="SPR-">
-      </div>
-      <div>
-        <label>Tax Rate (%)</label>
-        <input id="taxRate" type="number" value="0" step="0.1">
-      </div>
-      <div class="wide">
-        <label>Footer Note</label>
-        <textarea id="invoiceFooter" rows="3" placeholder="Thank you for choosing Sen Party Rentals!"></textarea>
+        <input type="color" id="themeColor" value="#0078ff">
       </div>
     </div>
   </section>
 
+  <!-- Notifications -->
+  <section class="card">
+    <h2>Notifications</h2>
+    <p class="muted" style="margin:-4px 0 10px">
+      Email uses <b>EmailJS</b> (no server needed). SMS uses an optional <b>Webhook URL</b> (Zapier/Make/Twilio).
+    </p>
+    <div class="form-grid">
+      <div><label>EmailJS Service ID</label><input id="ejService" placeholder="service_xxx"></div>
+      <div><label>EmailJS Template ID</label><input id="ejTemplate" placeholder="template_xxx"></div>
+      <div><label>EmailJS Public Key</label><input id="ejPublic" placeholder="YOUR_PUBLIC_KEY"></div>
+      <div class="wide"><label>SMS Webhook URL</label><input id="smsWebhook" placeholder="https://hooks.zapier.com/..."></div>
+    </div>
+  </section>
+
+  <!-- Invoice -->
+  <section class="card">
+    <h2>Invoice Settings</h2>
+    <div class="form-grid">
+      <div><label>Invoice Prefix</label><input id="invoicePrefix" placeholder="SPR-"></div>
+      <div><label>Tax Rate (%)</label><input id="taxRate" type="number" value="0" step="0.1"></div>
+      <div class="wide"><label>Footer Note</label><textarea id="invoiceFooter" rows="3" placeholder="Thank you for choosing Sen Party Rentals!"></textarea></div>
+    </div>
+  </section>
+
+  <!-- Save -->
   <div class="toolbar">
     <button id="saveSettings" class="btn-primary">Save Settings</button>
     <span id="settingsMsg" class="muted"></span>
@@ -127,56 +248,71 @@
 </main>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  const els = {
-    bizName: document.getElementById('bizName'),
-    ownerName: document.getElementById('ownerName'),
-    bizEmail: document.getElementById('bizEmail'),
-    bizPhone: document.getElementById('bizPhone'),
-    bizAddress: document.getElementById('bizAddress'),
-    bizLogo: document.getElementById('bizLogo'),
-    logoPreview: document.getElementById('logoPreview'),
-    themeColor: document.getElementById('themeColor'),
-    invoicePrefix: document.getElementById('invoicePrefix'),
-    taxRate: document.getElementById('taxRate'),
-    invoiceFooter: document.getElementById('invoiceFooter'),
-    saveBtn: document.getElementById('saveSettings'),
-    msg: document.getElementById('settingsMsg'),
-  };
-
-  const KEY = 'spr.settings';
-  const load = () => JSON.parse(localStorage.getItem(KEY) || '{}');
-  const save = data => localStorage.setItem(KEY, JSON.stringify(data));
-
-  // Load existing
-  const data = load();
-  Object.keys(els).forEach(k => {
-    if (data[k] && els[k].tagName !== 'IMG') els[k].value = data[k];
-    if (k === 'bizLogo' && data.logoData) els.logoPreview.src = data.logoData;
+  // Sidebar toggle
+  const sidebar = document.getElementById('sidebar');
+  const toggleBtn = document.getElementById('menuToggle');
+  toggleBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('hidden');
+    sidebar.classList.toggle('show');
   });
 
-  // Logo preview
-  els.bizLogo.addEventListener('change', e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => els.logoPreview.src = reader.result;
-    reader.readAsDataURL(file);
-  });
+  document.addEventListener('DOMContentLoaded', () => {
+    const els = {
+      bizName: bizName,
+      ownerName: ownerName,
+      bizEmail: bizEmail,
+      bizPhone: bizPhone,
+      bizAddress: bizAddress,
+      bizLogo: bizLogo,
+      logoPreview: logoPreview,
+      themeColor: themeColor,
+      invoicePrefix: invoicePrefix,
+      taxRate: taxRate,
+      invoiceFooter: invoiceFooter,
+      ejService: ejService,
+      ejTemplate: ejTemplate,
+      ejPublic: ejPublic,
+      smsWebhook: smsWebhook,
+      saveBtn: saveSettings,
+      msg: settingsMsg,
+    };
 
-  // Save
-  els.saveBtn.addEventListener('click', () => {
-    const settings = {};
+    const KEY = 'spr.settings';
+    const load = () => JSON.parse(localStorage.getItem(KEY) || '{}');
+    const save = data => localStorage.setItem(KEY, JSON.stringify(data));
+
+    const data = load();
     Object.keys(els).forEach(k => {
-      if (k !== 'bizLogo' && k !== 'logoPreview' && k !== 'saveBtn' && k !== 'msg')
-        settings[k] = els[k].value;
+      if (data[k] && els[k].tagName !== 'IMG') els[k].value = data[k];
+      if (k === 'bizLogo' && data.logoData) els.logoPreview.src = data.logoData;
     });
-    if (els.logoPreview.src) settings.logoData = els.logoPreview.src;
-    save(settings);
-    els.msg.textContent = 'Settings saved successfully ✓';
-    setTimeout(() => els.msg.textContent = '', 2000);
+
+    // Logo preview
+    els.bizLogo.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => els.logoPreview.src = reader.result;
+      reader.readAsDataURL(file);
+    });
+
+    // Theme color live preview
+    els.themeColor.addEventListener('input', e => {
+      document.documentElement.style.setProperty('--brand', e.target.value);
+    });
+
+    // Save settings
+    els.saveBtn.addEventListener('click', () => {
+      const settings = {};
+      Object.keys(els).forEach(k => {
+        if (!['bizLogo','logoPreview','saveBtn','msg'].includes(k)) settings[k] = els[k].value;
+      });
+      if (els.logoPreview.src) settings.logoData = els.logoPreview.src;
+      save(settings);
+      els.msg.textContent = 'Settings saved successfully ✓';
+      setTimeout(() => els.msg.textContent = '', 2500);
+    });
   });
-});
 </script>
 </body>
 </html>

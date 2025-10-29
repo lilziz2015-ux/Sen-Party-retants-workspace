@@ -4,12 +4,116 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bookings — Sen Party Rentals Pro</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
+<link rel="stylesheet" href="assets/style.css">
 
+<style>
+:root {
+  --brand: #0078ff;
+  --brand-dark: #004c99;
+  --muted: #6b7280;
+  --bg: #f8fafc;
+  --white: #fff;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: #1f2937;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 260px;
+  background: var(--white);
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  padding: 1rem;
+  transition: transform 0.3s ease;
+  z-index: 1000;
+}
+.sidebar.hidden { transform: translateX(-100%); }
+.sidebar .logo { text-align: center; }
+.sidebar img { width: 80px; border-radius: 50%; margin-bottom: 0.5rem; }
+.sidebar nav { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 1rem; }
+.sidebar nav a {
+  text-decoration: none; color: #1f2937; padding: 0.6rem 0.8rem;
+  border-radius: 6px; transition: 0.2s;
+}
+.sidebar nav a:hover, .sidebar nav a.active {
+  background: #e6f0ff; color: var(--brand-dark); font-weight: 600;
+}
+
+/* Main */
+.main { flex: 1; margin-left: 260px; padding: 2rem; }
+.topbar {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; margin-bottom: 2rem;
+}
+.menu-toggle {
+  display: none; background: var(--brand); color: #fff; border: none;
+  padding: 0.6rem 0.9rem; border-radius: 6px; font-size: 1.2rem; cursor: pointer;
+}
+.muted { color: var(--muted); }
+.card {
+  background: var(--white);
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+.form-grid .wide { grid-column: 1 / -1; }
+input, select, textarea {
+  width: 100%; padding: 0.6rem; border: 1px solid #ddd; border-radius: 8px;
+}
+.toolbar {
+  display: flex; align-items: center; gap: 1rem; margin-top: 1rem;
+}
+.btn-primary {
+  background: var(--brand); color: #fff; border: none; border-radius: 6px;
+  padding: 0.7rem 1.2rem; cursor: pointer; font-weight: 600; transition: 0.2s;
+}
+.btn-primary:hover { background: var(--brand-dark); }
+.btn {
+  background: #e5e7eb; border: none; border-radius: 6px; padding: 0.7rem 1.2rem;
+  cursor: pointer; font-weight: 500;
+}
+.btn:hover { background: #d1d5db; }
+table {
+  width: 100%; border-collapse: collapse; min-width: 700px;
+}
+th, td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+th { background: #f3f4f6; color: #374151; font-weight: 600; }
+tr:hover { background: #f9fafb; }
+footer { text-align: center; font-size: 0.85rem; color: var(--muted); margin-top: 2rem; }
+
+@media (max-width: 900px) {
+  .main { margin-left: 0; }
+  .menu-toggle { display: block; margin-bottom: 1rem; }
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.show { transform: translateX(0); }
+}
+</style>
+</head>
+
+<body>
 <!-- Sidebar -->
-<aside class="sidebar">
+<aside class="sidebar hidden" id="sidebar">
   <div class="logo">
     <img src="02B58D79-6737-47EA-8099-73006879E55A Small.jpeg" alt="Logo">
     <h2>Sen Party Rentals Pro</h2>
@@ -28,6 +132,7 @@
 <!-- Main -->
 <main class="main">
   <header class="topbar">
+    <button class="menu-toggle" id="menuToggle">☰</button>
     <div>
       <h1>Bookings</h1>
       <p class="muted">Add, edit, and track all customer bookings.</p>
@@ -38,45 +143,20 @@
   <section class="card">
     <h2>Add / Edit Booking</h2>
     <div class="form-grid">
-      <div>
-        <label>Customer Name</label>
-        <input id="b_name" placeholder="Full name" />
-      </div>
-      <div>
-        <label>Email</label>
-        <input id="b_email" type="email" placeholder="email@example.com" />
-      </div>
-      <div>
-        <label>Phone</label>
-        <input id="b_phone" placeholder="(555) 123-4567" />
-      </div>
-      <div>
-        <label>Event Date</label>
-        <input id="b_date" type="date" />
-      </div>
-      <div>
-        <label>Delivery Type</label>
+      <div><label>Customer Name</label><input id="b_name" placeholder="Full name" /></div>
+      <div><label>Email</label><input id="b_email" type="email" placeholder="email@example.com" /></div>
+      <div><label>Phone</label><input id="b_phone" placeholder="(555) 123-4567" /></div>
+      <div><label>Event Date</label><input id="b_date" type="date" /></div>
+      <div><label>Delivery Type</label>
         <select id="b_type">
           <option value="delivery">Delivery 🟢</option>
           <option value="pickup">Pickup 🟡</option>
         </select>
       </div>
-      <div>
-        <label>Total ($)</label>
-        <input id="b_total" type="number" min="0" value="0" />
-      </div>
-      <div>
-        <label>Deposit ($)</label>
-        <input id="b_deposit" type="number" min="0" value="0" />
-      </div>
-      <div class="wide">
-        <label>Address</label>
-        <input id="b_address" placeholder="11910 Bradley Forest Rd, Manassas, VA" />
-      </div>
-      <div class="wide">
-        <label>Notes</label>
-        <textarea id="b_notes" rows="2" placeholder="Setup notes, gate code, etc."></textarea>
-      </div>
+      <div><label>Total ($)</label><input id="b_total" type="number" min="0" value="0" /></div>
+      <div><label>Deposit ($)</label><input id="b_deposit" type="number" min="0" value="0" /></div>
+      <div class="wide"><label>Address</label><input id="b_address" placeholder="11910 Bradley Forest Rd, Manassas, VA" /></div>
+      <div class="wide"><label>Notes</label><textarea id="b_notes" rows="2" placeholder="Setup notes, gate code, etc."></textarea></div>
     </div>
     <div class="toolbar">
       <button id="btnSave" class="btn-primary">Save Booking</button>
@@ -89,20 +169,22 @@
   <section class="card">
     <h2>All Bookings</h2>
     <input id="search" placeholder="Search by name, type, or date..." style="margin-bottom:1rem;width:100%;padding:0.6rem;border-radius:8px;border:1px solid #ddd;">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Customer</th>
-          <th>Type</th>
-          <th>Total</th>
-          <th>Deposit</th>
-          <th>Balance</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="bookingsTable"></tbody>
-    </table>
+    <div style="overflow-x:auto;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Customer</th>
+            <th>Type</th>
+            <th>Total</th>
+            <th>Deposit</th>
+            <th>Balance</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="bookingsTable"></tbody>
+      </table>
+    </div>
   </section>
 
   <footer>
@@ -110,39 +192,132 @@
   </footer>
 </main>
 
-<script src="assets/app.js"></script>
 <script>
+// Sidebar toggle
+const sidebar = document.getElementById('sidebar');
+const toggleBtn = document.getElementById('menuToggle');
+toggleBtn.addEventListener('click', () => {
+  sidebar.classList.toggle('hidden');
+  sidebar.classList.toggle('show');
+});
+
+// Local Storage helpers
+function getBookings() {
+  return JSON.parse(localStorage.getItem("spr.bookings") || "[]");
+}
+function saveBookings(data) {
+  localStorage.setItem("spr.bookings", JSON.stringify(data));
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const table = document.getElementById("bookingsTable");
+  const formMsg = document.getElementById("formMsg");
   const search = document.getElementById("search");
+
+  const els = {
+    name: b_name,
+    email: b_email,
+    phone: b_phone,
+    date: b_date,
+    type: b_type,
+    total: b_total,
+    deposit: b_deposit,
+    address: b_address,
+    notes: b_notes
+  };
+
   let bookings = getBookings();
+  let editId = null;
 
   function renderTable(data) {
     table.innerHTML = "";
-    if (data.length === 0) {
+    if (!data.length) {
       table.innerHTML = "<tr><td colspan='7' class='muted'>No bookings found.</td></tr>";
       return;
     }
     data.forEach(b => {
-      const balance = b.total - b.deposit;
-      const row = `
-        <tr>
-          <td>${b.date}</td>
-          <td>${b.customer}</td>
-          <td>${b.type === 'pickup' ? '🟡 Pickup' : '🟢 Delivery'}</td>
-          <td>$${b.total}</td>
-          <td>$${b.deposit}</td>
-          <td>$${balance}</td>
-          <td>
-            <button class="btn" onclick="editBooking(${b.id})">Edit</button>
-            <button class="btn" onclick="deleteBooking(${b.id})">Delete</button>
-          </td>
-        </tr>`;
-      table.innerHTML += row;
+      const balance = (b.total - b.deposit).toFixed(2);
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${b.date}</td>
+        <td>${b.customer}</td>
+        <td>${b.type === 'pickup' ? '🟡 Pickup' : '🟢 Delivery'}</td>
+        <td>$${b.total.toFixed(2)}</td>
+        <td>$${b.deposit.toFixed(2)}</td>
+        <td>$${balance}</td>
+        <td>
+          <button class="btn" onclick="editBooking(${b.id})">Edit</button>
+          <button class="btn" onclick="deleteBooking(${b.id})">Delete</button>
+        </td>`;
+      table.appendChild(row);
     });
   }
 
-  renderTable(bookings);
+  window.editBooking = (id) => {
+    const b = bookings.find(x => x.id === id);
+    if (!b) return;
+    editId = id;
+    els.name.value = b.customer;
+    els.email.value = b.email;
+    els.phone.value = b.phone;
+    els.date.value = b.date;
+    els.type.value = b.type;
+    els.total.value = b.total;
+    els.deposit.value = b.deposit;
+    els.address.value = b.address;
+    els.notes.value = b.notes;
+    formMsg.textContent = "Editing booking...";
+  };
+
+  window.deleteBooking = (id) => {
+    if (!confirm("Are you sure you want to delete this booking?")) return;
+    bookings = bookings.filter(x => x.id !== id);
+    saveBookings(bookings);
+    renderTable(bookings);
+    formMsg.textContent = "Booking deleted.";
+    setTimeout(() => formMsg.textContent = "", 1500);
+  };
+
+  document.getElementById("btnSave").onclick = () => {
+    const data = {
+      id: editId || Date.now(),
+      customer: els.name.value.trim(),
+      email: els.email.value.trim(),
+      phone: els.phone.value.trim(),
+      date: els.date.value,
+      type: els.type.value,
+      total: parseFloat(els.total.value) || 0,
+      deposit: parseFloat(els.deposit.value) || 0,
+      address: els.address.value.trim(),
+      notes: els.notes.value.trim()
+    };
+    if (!data.customer || !data.date) {
+      formMsg.textContent = "Customer name and date are required.";
+      return;
+    }
+
+    if (editId) {
+      bookings = bookings.map(b => (b.id === editId ? data : b));
+      formMsg.textContent = "Booking updated ✓";
+    } else {
+      bookings.push(data);
+      formMsg.textContent = "Booking added ✓";
+    }
+    saveBookings(bookings);
+    renderTable(bookings);
+    resetForm();
+    setTimeout(() => formMsg.textContent = "", 2000);
+  };
+
+  function resetForm() {
+    Object.values(els).forEach(el => el.value = el.tagName === "SELECT" ? "delivery" : "");
+    els.total.value = 0;
+    els.deposit.value = 0;
+    editId = null;
+    formMsg.textContent = "";
+  }
+
+  document.getElementById("btnReset").onclick = resetForm;
 
   search.addEventListener("input", e => {
     const q = e.target.value.toLowerCase();
@@ -153,6 +328,8 @@ document.addEventListener("DOMContentLoaded", () => {
     );
     renderTable(filtered);
   });
+
+  renderTable(bookings);
 });
 </script>
 </body>

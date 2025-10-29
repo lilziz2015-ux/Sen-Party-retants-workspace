@@ -4,12 +4,207 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Invoices — Sen Party Rentals Pro</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
+<link rel="stylesheet" href="assets/style.css">
 
+<style>
+  :root {
+    --brand: #0078ff;
+    --brand-light: #e6f0ff;
+    --brand-dark: #004c99;
+    --muted: #6b7280;
+    --bg: #f8fafc;
+    --white: #fff;
+  }
+
+  body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: #1f2937;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 260px;
+    background: var(--white);
+    border-right: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    padding: 1rem;
+    transition: transform 0.3s ease;
+    z-index: 1000;
+  }
+
+  .sidebar.hidden { transform: translateX(-100%); }
+
+  .sidebar .logo { text-align: center; }
+  .sidebar img { width: 80px; border-radius: 50%; margin-bottom: 0.5rem; }
+
+  .sidebar nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-top: 1rem;
+  }
+
+  .sidebar nav a {
+    text-decoration: none;
+    color: #1f2937;
+    padding: 0.6rem 0.8rem;
+    border-radius: 6px;
+    transition: 0.2s;
+  }
+
+  .sidebar nav a:hover,
+  .sidebar nav a.active {
+    background: var(--brand-light);
+    color: var(--brand-dark);
+    font-weight: 600;
+  }
+
+  /* Main */
+  .main {
+    flex: 1;
+    margin-left: 260px;
+    padding: 2rem;
+  }
+
+  /* Header */
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+
+  .menu-toggle {
+    display: none;
+    background: var(--brand);
+    color: #fff;
+    border: none;
+    padding: 0.6rem 0.9rem;
+    border-radius: 6px;
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+
+  .muted { color: var(--muted); }
+
+  /* Card */
+  .card {
+    background: var(--white);
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+
+  .form-grid .wide { grid-column: 1 / -1; }
+
+  label { font-weight: 600; display: block; margin-bottom: 0.3rem; }
+  input, textarea, select {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+  }
+
+  .toolbar {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: var(--brand);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 0.7rem 1.2rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+  }
+  .btn-primary:hover { background: var(--brand-dark); }
+
+  .btn {
+    background: #e5e7eb;
+    border: none;
+    border-radius: 6px;
+    padding: 0.7rem 1.2rem;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .btn:hover { background: #d1d5db; }
+
+  /* Invoice Preview */
+  #invoiceArea {
+    max-width: 700px;
+    margin: auto;
+    background: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+  }
+
+  .invoice-header {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .invoice-header img {
+    max-width: 120px;
+    border-radius: 8px;
+  }
+
+  .invoice-info {
+    text-align: right;
+  }
+
+  h3, h4 { margin-top: 1rem; }
+
+  footer {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 2rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .main { margin-left: 0; }
+    .menu-toggle { display: block; margin-bottom: 1rem; }
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.show { transform: translateX(0); }
+  }
+
+  @media print {
+    body * { visibility: hidden; }
+    #invoiceArea, #invoiceArea * { visibility: visible; }
+    #invoiceArea { position: absolute; left: 0; top: 0; width: 100%; }
+  }
+</style>
+</head>
+
+<body>
 <!-- Sidebar -->
-<aside class="sidebar">
+<aside class="sidebar hidden" id="sidebar">
   <div class="logo">
     <img src="02B58D79-6737-47EA-8099-73006879E55A Small.jpeg" alt="Logo">
     <h2>Sen Party Rentals Pro</h2>
@@ -28,12 +223,14 @@
 <!-- Main -->
 <main class="main">
   <header class="topbar">
+    <button class="menu-toggle" id="menuToggle">☰</button>
     <div>
       <h1>Invoices</h1>
       <p class="muted">Generate, print, and email invoices for customers.</p>
     </div>
   </header>
 
+  <!-- Invoice Form -->
   <section class="card">
     <h2>Create Invoice</h2>
     <div class="form-grid">
@@ -77,6 +274,7 @@
     </div>
   </section>
 
+  <!-- Invoice Preview -->
   <section id="invoicePreview" class="card" style="display:none;">
     <div id="invoiceArea">
       <div class="invoice-header">
@@ -116,52 +314,70 @@
 </main>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  const settings = JSON.parse(localStorage.getItem("spr.settings") || "{}");
-  const el = id => document.getElementById(id);
-
-  function fmt(num){ return Number(num || 0).toFixed(2); }
-
-  el("btnCreateInvoice").addEventListener("click", () => {
-    const name = el("invName").value;
-    const email = el("invEmail").value;
-    const phone = el("invPhone").value;
-    const date = el("invDate").value;
-    const items = el("invItems").value;
-    const sub = parseFloat(el("invSubtotal").value || 0);
-    const dep = parseFloat(el("invDeposit").value || 0);
-    const taxRate = parseFloat(settings.taxRate || 0);
-    const tax = sub * (taxRate / 100);
-    const total = sub + tax;
-    const balance = total - dep;
-
-    el("invoicePreview").style.display = "block";
-    el("custName").textContent = name;
-    el("custDate").textContent = date;
-    el("custEmail").textContent = email;
-    el("custPhone").textContent = phone;
-    el("custItems").textContent = items;
-    el("custSubtotal").textContent = fmt(sub);
-    el("taxRateDisplay").textContent = fmt(taxRate);
-    el("custTax").textContent = fmt(tax);
-    el("custDeposit").textContent = fmt(dep);
-    el("custBalance").textContent = fmt(balance);
-    el("invoiceFooterDisplay").textContent = settings.invoiceFooter || "Thank you for choosing Sen Party Rentals!";
-    el("bizNameDisplay").textContent = settings.bizName || "Sen Party Rentals";
-    el("bizAddressDisplay").textContent = settings.bizAddress || "";
-    el("bizPhoneDisplay").textContent = settings.bizPhone || "";
-    el("bizEmailDisplay").textContent = settings.bizEmail || "";
-    if(settings.logoData) el("bizLogoDisplay").src = settings.logoData;
+  // Sidebar mobile toggle
+  const sidebar = document.getElementById('sidebar');
+  const toggleBtn = document.getElementById('menuToggle');
+  toggleBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('hidden');
+    sidebar.classList.toggle('show');
   });
 
-  el("invImage").addEventListener("change", e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => el("imagePreview").src = reader.result;
-    reader.readAsDataURL(file);
+  document.addEventListener("DOMContentLoaded", () => {
+    const settings = JSON.parse(localStorage.getItem("spr.settings") || "{}");
+    const el = id => document.getElementById(id);
+    const fmt = num => Number(num || 0).toFixed(2);
+
+    el("btnCreateInvoice").addEventListener("click", () => {
+      const name = el("invName").value.trim();
+      const email = el("invEmail").value.trim();
+      const phone = el("invPhone").value.trim();
+      const date = el("invDate").value;
+      const items = el("invItems").value.trim();
+      const sub = parseFloat(el("invSubtotal").value || 0);
+      const dep = parseFloat(el("invDeposit").value || 0);
+      const taxRate = parseFloat(settings.taxRate || 0);
+      const tax = sub * (taxRate / 100);
+      const total = sub + tax;
+      const balance = total - dep;
+
+      if (!name || !date || !sub) {
+        alert("Please fill in customer name, event date, and subtotal.");
+        return;
+      }
+
+      el("invoicePreview").style.display = "block";
+      el("custName").textContent = name;
+      el("custDate").textContent = date;
+      el("custEmail").textContent = email;
+      el("custPhone").textContent = phone;
+      el("custItems").textContent = items;
+      el("custSubtotal").textContent = fmt(sub);
+      el("taxRateDisplay").textContent = fmt(taxRate);
+      el("custTax").textContent = fmt(tax);
+      el("custDeposit").textContent = fmt(dep);
+      el("custBalance").textContent = fmt(balance);
+      el("invoiceFooterDisplay").textContent =
+        settings.invoiceFooter || "Thank you for choosing Sen Party Rentals!";
+      el("bizNameDisplay").textContent = settings.bizName || "Sen Party Rentals";
+      el("bizAddressDisplay").textContent = settings.bizAddress || "11910 Bradley Forest Rd, Manassas, VA";
+      el("bizPhoneDisplay").textContent = settings.bizPhone || "571-719-9575";
+      el("bizEmailDisplay").textContent = settings.bizEmail || "senmoonbounce@gmail.com";
+      if (settings.logoData) el("bizLogoDisplay").src = settings.logoData;
+
+      // Add uploaded image preview into invoice
+      const preview = el("imagePreview").src;
+      if (preview) el("custImage").src = preview;
+    });
+
+    // Show preview image before generating invoice
+    el("invImage").addEventListener("change", e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => el("imagePreview").src = reader.result;
+      reader.readAsDataURL(file);
+    });
   });
-});
 </script>
 </body>
 </html>
