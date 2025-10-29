@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settings — Sen Party Rentals Pro</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="logo">
+    <img src="assets/logo.png" alt="Logo">
+    <h2>Sen Party Rentals Pro</h2>
+  </div>
+  <nav>
+    <a href="index.html">🏠 Dashboard</a>
+    <a href="bookings.html">📅 Bookings</a>
+    <a href="calendar.html">🗓️ Calendar</a>
+    <a href="customers.html">👥 Customers</a>
+    <a href="invoices.html">🧾 Invoices</a>
+    <a href="delivery.html">🚚 Delivery</a>
+    <a href="settings.html" class="active">⚙️ Settings</a>
+  </nav>
+</aside>
+
+<!-- Main -->
+<main class="main">
+  <header class="topbar">
+    <div>
+      <h1>Settings</h1>
+      <p class="muted">Customize your business information, appearance, and preferences.</p>
+    </div>
+  </header>
+
+  <section class="card">
+    <h2>Business Information</h2>
+    <div class="form-grid">
+      <div>
+        <label>Business Name</label>
+        <input id="bizName" placeholder="Sen Party Rentals">
+      </div>
+      <div>
+        <label>Owner Name</label>
+        <input id="ownerName" placeholder="Mamadou Samb">
+      </div>
+      <div>
+        <label>Email</label>
+        <input id="bizEmail" type="email" placeholder="senmoonbounce@gmail.com">
+      </div>
+      <div>
+        <label>Phone</label>
+        <input id="bizPhone" placeholder="571-719-9575">
+      </div>
+      <div class="wide">
+        <label>Address</label>
+        <input id="bizAddress" placeholder="11910 Bradley Forest Rd, Manassas, VA">
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Branding & Appearance</h2>
+    <div class="form-grid">
+      <div>
+        <label>Logo</label>
+        <input type="file" id="bizLogo" accept="image/*">
+        <img id="logoPreview" style="max-width:150px;margin-top:10px;border-radius:8px;">
+      </div>
+      <div>
+        <label>Theme Color</label>
+        <input type="color" id="themeColor" value="#0b67a3">
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Invoice Settings</h2>
+    <div class="form-grid">
+      <div>
+        <label>Invoice Prefix</label>
+        <input id="invoicePrefix" placeholder="SPR-">
+      </div>
+      <div>
+        <label>Tax Rate (%)</label>
+        <input id="taxRate" type="number" value="0" step="0.1">
+      </div>
+      <div class="wide">
+        <label>Footer Note</label>
+        <textarea id="invoiceFooter" rows="3" placeholder="Thank you for choosing Sen Party Rentals!"></textarea>
+      </div>
+    </div>
+  </section>
+
+  <div class="toolbar">
+    <button id="saveSettings" class="btn-primary">Save Settings</button>
+    <span id="settingsMsg" class="muted"></span>
+  </div>
+
+  <footer>
+    <p>© 2025 Sen Party Rentals Pro — Settings</p>
+  </footer>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const els = {
+    bizName: document.getElementById('bizName'),
+    ownerName: document.getElementById('ownerName'),
+    bizEmail: document.getElementById('bizEmail'),
+    bizPhone: document.getElementById('bizPhone'),
+    bizAddress: document.getElementById('bizAddress'),
+    bizLogo: document.getElementById('bizLogo'),
+    logoPreview: document.getElementById('logoPreview'),
+    themeColor: document.getElementById('themeColor'),
+    invoicePrefix: document.getElementById('invoicePrefix'),
+    taxRate: document.getElementById('taxRate'),
+    invoiceFooter: document.getElementById('invoiceFooter'),
+    saveBtn: document.getElementById('saveSettings'),
+    msg: document.getElementById('settingsMsg'),
+  };
+
+  const KEY = 'spr.settings';
+  const load = () => JSON.parse(localStorage.getItem(KEY) || '{}');
+  const save = data => localStorage.setItem(KEY, JSON.stringify(data));
+
+  // Load existing
+  const data = load();
+  Object.keys(els).forEach(k => {
+    if (data[k] && els[k].tagName !== 'IMG') els[k].value = data[k];
+    if (k === 'bizLogo' && data.logoData) els.logoPreview.src = data.logoData;
+  });
+
+  // Logo preview
+  els.bizLogo.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => els.logoPreview.src = reader.result;
+    reader.readAsDataURL(file);
+  });
+
+  // Save
+  els.saveBtn.addEventListener('click', () => {
+    const settings = {};
+    Object.keys(els).forEach(k => {
+      if (k !== 'bizLogo' && k !== 'logoPreview' && k !== 'saveBtn' && k !== 'msg')
+        settings[k] = els[k].value;
+    });
+    if (els.logoPreview.src) settings.logoData = els.logoPreview.src;
+    save(settings);
+    els.msg.textContent = 'Settings saved successfully ✓';
+    setTimeout(() => els.msg.textContent = '', 2000);
+  });
+});
+</script>
+</body>
+</html>

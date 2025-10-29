@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Delivery Planner — Sen Party Rentals Pro</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="logo">
+    <img src="assets/logo.png" alt="Logo">
+    <h2>Sen Party Rentals Pro</h2>
+  </div>
+  <nav>
+    <a href="index.html">🏠 Dashboard</a>
+    <a href="bookings.html">📅 Bookings</a>
+    <a href="calendar.html">🗓️ Calendar</a>
+    <a href="customers.html">👥 Customers</a>
+    <a href="invoices.html">🧾 Invoices</a>
+    <a href="delivery.html" class="active">🚚 Delivery</a>
+    <a href="settings.html">⚙️ Settings</a>
+  </nav>
+</aside>
+
+<!-- Main -->
+<main class="main">
+  <header class="topbar">
+    <div>
+      <h1>Delivery & Pickup Planner</h1>
+      <p class="muted">Track and manage all deliveries and pickups.</p>
+    </div>
+  </header>
+
+  <section class="card">
+    <div class="toolbar">
+      <input id="searchDelivery" placeholder="Search by name or date..." style="flex:1;padding:0.6rem;border-radius:8px;border:1px solid #ddd;">
+      <select id="filterType">
+        <option value="">All Types</option>
+        <option value="delivery">Delivery 🟢</option>
+        <option value="pickup">Pickup 🟡</option>
+      </select>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Today's Deliveries & Pickups</h2>
+    <ul id="deliveryList" class="agenda-list"></ul>
+  </section>
+
+  <section class="card">
+    <h2>Upcoming</h2>
+    <ul id="upcomingList" class="agenda-list"></ul>
+  </section>
+
+  <footer>
+    <p>© 2025 Sen Party Rentals Pro — All rights reserved.</p>
+  </footer>
+</main>
+
+<script src="assets/app.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const all = getBookings();
+  const todayISO = new Date().toISOString().slice(0,10);
+  const deliveryList = document.getElementById("deliveryList");
+  const upcomingList = document.getElementById("upcomingList");
+  const filterType = document.getElementById("filterType");
+  const search = document.getElementById("searchDelivery");
+
+  function render() {
+    const type = filterType.value;
+    const q = search.value.toLowerCase();
+    const filtered = all.filter(b =>
+      (!type || b.type === type) &&
+      (b.customer.toLowerCase().includes(q) || b.date.includes(q))
+    );
+
+    const today = filtered.filter(b => b.date === todayISO);
+    const upcoming = filtered.filter(b => b.date > todayISO);
+
+    renderList(today, deliveryList);
+    renderList(upcoming, upcomingList);
+  }
+
+  function renderList(data, container) {
+    container.innerHTML = "";
+    if (data.length === 0) {
+      container.innerHTML = "<li class='muted'>No tasks found.</li>";
+      return;
+    }
+    data.forEach(b => {
+      const color = b.type === "delivery" ? "upcoming" : "tomorrow";
+      const checked = b.done ? "checked" : "";
+      const li = document.createElement("li");
+      li.classList.add(color);
+      li.innerHTML = `
+        <div>
+          <input type="checkbox" id="chk-${b.id}" ${checked}>
+          <label for="chk-${b.id}">${b.customer} — ${b.address || "No address"}</label>
+        </div>
+        <small>${b.type === "delivery" ? "🟢 Delivery" : "🟡 Pickup"} | ${b.date}</small>
+      `;
+      li.querySelector("input").addEventListener("change", e => {
+        b.done = e.target.checked;
+        saveBookings(all);
+      });
+      container.appendChild(li);
+    });
+  }
+
+  filterType.addEventListener("change", render);
+  search.addEventListener("input", render);
+  render();
+});
+</script>
+</body>
+</html>

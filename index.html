@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Sen Party Rentals Pro</title>
+  <link rel="stylesheet" href="assets/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="logo">
+    <img src="assets/logo.png" alt="Sen Party Rentals Logo" />
+    <h2>Sen Party Rentals Pro</h2>
+  </div>
+  <nav>
+    <a href="index.html" class="active">🏠 Dashboard</a>
+    <a href="bookings.html">📅 Bookings</a>
+    <a href="calendar.html">🗓️ Calendar</a>
+    <a href="customers.html">👥 Customers</a>
+    <a href="invoices.html">🧾 Invoices</a>
+    <a href="delivery.html">🚚 Delivery</a>
+    <a href="settings.html">⚙️ Settings</a>
+  </nav>
+  <div class="logout">
+    <button id="logoutBtn" class="btn-logout">Logout</button>
+  </div>
+</aside>
+
+<!-- Main -->
+<main class="main">
+  <header class="topbar">
+    <div>
+      <h1>Dashboard</h1>
+      <p class="muted">Welcome to Sen Party Rentals Pro — manage your business with ease.</p>
+    </div>
+    <div class="biz-info">
+      <span>📞 571-719-9575</span>
+      <span>📍 11910 Bradley Forest Rd, Manassas, VA</span>
+    </div>
+  </header>
+
+  <!-- Stats Overview -->
+  <section class="stats-grid">
+    <div class="card stat">
+      <h3>Upcoming Events</h3>
+      <p id="stat-upcoming" class="stat-value">12</p>
+    </div>
+    <div class="card stat">
+      <h3>Total Bookings</h3>
+      <p id="stat-total" class="stat-value">84</p>
+    </div>
+    <div class="card stat">
+      <h3>Unpaid Balances</h3>
+      <p id="stat-unpaid" class="stat-value">$1,240</p>
+    </div>
+    <div class="card stat">
+      <h3>Revenue (Month)</h3>
+      <p id="stat-revenue" class="stat-value">$12,350</p>
+    </div>
+  </section>
+
+  <!-- Agenda Section -->
+  <section class="card">
+    <div class="card-header">
+      <h2>Today's Agenda</h2>
+      <button class="btn-primary" onclick="window.location.href='bookings.html'">+ Add Booking</button>
+    </div>
+    <ul id="agenda-list" class="agenda-list">
+      <li><b>10:00 AM</b> — Delivery to <b>John Doe</b> (🟢 Moonbounce)</li>
+      <li><b>1:00 PM</b> — Pickup from <b>Smith Family</b> (🟡 Chairs)</li>
+      <li><b>4:00 PM</b> — Delivery to <b>Williams Park</b> (🟢 Water Slide)</li>
+    </ul>
+  </section>
+
+  <!-- Revenue Chart -->
+  <section class="card">
+    <div class="card-header">
+      <h2>Revenue Overview</h2>
+      <button class="btn-outline">📊 View Reports</button>
+    </div>
+    <canvas id="revenueChart" height="100"></canvas>
+  </section>
+
+  <footer>
+    <p>© 2025 Sen Party Rentals Pro — All rights reserved.</p>
+  </footer>
+</main>
+
+<!-- JS -->
+<script src="assets/app.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const ctx = document.getElementById('revenueChart').getContext('2d');
+  const revenueChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+      datasets: [{
+        label: 'Monthly Revenue ($)',
+        data: [1200, 1800, 2200, 3100, 3800, 4500, 4800, 5200],
+        fill: true,
+        backgroundColor: 'rgba(0, 102, 204, 0.15)',
+        borderColor: '#0066cc',
+        tension: 0.3,
+        borderWidth: 3,
+        pointRadius: 4,
+        pointBackgroundColor: '#004999'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+      },
+      scales: {
+        y: { beginAtZero: true, grid: { color: '#eef2f7' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+});
+</script>
+
+<style>
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.stat {
+  text-align: center;
+  background: linear-gradient(145deg, #ffffff, #f0f4f9);
+  border: 1px solid #e5e7eb;
+  transition: 0.3s;
+}
+.stat:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--brand-dark);
+  margin-top: 0.5rem;
+}
+.agenda-list {
+  list-style: none;
+  margin-top: 1rem;
+  padding-left: 0;
+}
+.agenda-list li {
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  margin-bottom: 0.6rem;
+  border-left: 5px solid var(--brand);
+  transition: 0.2s;
+}
+.agenda-list li:hover {
+  background: var(--brand-light);
+}
+.biz-info {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+</style>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Login — Sen Party Rentals Pro</title>
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body class="login-page">
+
+<div class="login-card">
+  <img src="assets/logo.png" alt="Logo" class="login-logo" />
+  <h1>Sen Party Rentals Pro</h1>
+  <p class="muted">Sign in to manage your bookings and invoices</p>
+
+  <!-- Email / Password login -->
+  <input id="loginEmail" type="email" placeholder="Email" />
+  <input id="loginPass" type="password" placeholder="Password" />
+  <button id="loginBtn" class="btn-primary">Login</button>
+
+  <p class="muted">or</p>
+
+  <!-- Google login -->
+  <button id="googleBtn" class="btn">🔐 Sign in with Google</button>
+
+  <p class="muted" id="loginMsg"></p>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+  onAuthStateChanged,
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { FB_CFG } from "./assets/firebase-config.js";
+
+const app = initializeApp(FB_CFG);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+const emailEl = document.getElementById("loginEmail");
+const passEl = document.getElementById("loginPass");
+const msgEl = document.getElementById("loginMsg");
+
+document.getElementById("loginBtn").onclick = async () => {
+  msgEl.textContent = "Signing in …";
+  try {
+    await signInWithEmailAndPassword(auth, emailEl.value, passEl.value);
+    window.location.href = "index.html";
+  } catch (e) {
+    msgEl.textContent = "Login failed: " + e.message;
+  }
+};
+
+document.getElementById("googleBtn").onclick = async () => {
+  msgEl.textContent = "Connecting Google …";
+  try {
+    await signInWithPopup(auth, provider);
+    window.location.href = "index.html";
+  } catch (e) {
+    msgEl.textContent = "Google login failed.";
+  }
+};
+
+onAuthStateChanged(auth, (user) => {
+  if (user) window.location.href = "index.html";
+});
+</script>
+</body>
+</html>

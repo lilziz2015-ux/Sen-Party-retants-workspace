@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bookings — Sen Party Rentals Pro</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="logo">
+    <img src="assets/logo.png" alt="Logo">
+    <h2>Sen Party Rentals Pro</h2>
+  </div>
+  <nav>
+    <a href="index.html">🏠 Dashboard</a>
+    <a href="bookings.html" class="active">📅 Bookings</a>
+    <a href="calendar.html">🗓️ Calendar</a>
+    <a href="customers.html">👥 Customers</a>
+    <a href="invoices.html">🧾 Invoices</a>
+    <a href="delivery.html">🚚 Delivery</a>
+    <a href="settings.html">⚙️ Settings</a>
+  </nav>
+</aside>
+
+<!-- Main -->
+<main class="main">
+  <header class="topbar">
+    <div>
+      <h1>Bookings</h1>
+      <p class="muted">Add, edit, and track all customer bookings.</p>
+    </div>
+  </header>
+
+  <!-- Booking Form -->
+  <section class="card">
+    <h2>Add / Edit Booking</h2>
+    <div class="form-grid">
+      <div>
+        <label>Customer Name</label>
+        <input id="b_name" placeholder="Full name" />
+      </div>
+      <div>
+        <label>Email</label>
+        <input id="b_email" type="email" placeholder="email@example.com" />
+      </div>
+      <div>
+        <label>Phone</label>
+        <input id="b_phone" placeholder="(555) 123-4567" />
+      </div>
+      <div>
+        <label>Event Date</label>
+        <input id="b_date" type="date" />
+      </div>
+      <div>
+        <label>Delivery Type</label>
+        <select id="b_type">
+          <option value="delivery">Delivery 🟢</option>
+          <option value="pickup">Pickup 🟡</option>
+        </select>
+      </div>
+      <div>
+        <label>Total ($)</label>
+        <input id="b_total" type="number" min="0" value="0" />
+      </div>
+      <div>
+        <label>Deposit ($)</label>
+        <input id="b_deposit" type="number" min="0" value="0" />
+      </div>
+      <div class="wide">
+        <label>Address</label>
+        <input id="b_address" placeholder="11910 Bradley Forest Rd, Manassas, VA" />
+      </div>
+      <div class="wide">
+        <label>Notes</label>
+        <textarea id="b_notes" rows="2" placeholder="Setup notes, gate code, etc."></textarea>
+      </div>
+    </div>
+    <div class="toolbar">
+      <button id="btnSave" class="btn-primary">Save Booking</button>
+      <button id="btnReset" class="btn">Reset</button>
+      <span id="formMsg" class="muted"></span>
+    </div>
+  </section>
+
+  <!-- Bookings Table -->
+  <section class="card">
+    <h2>All Bookings</h2>
+    <input id="search" placeholder="Search by name, type, or date..." style="margin-bottom:1rem;width:100%;padding:0.6rem;border-radius:8px;border:1px solid #ddd;">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Customer</th>
+          <th>Type</th>
+          <th>Total</th>
+          <th>Deposit</th>
+          <th>Balance</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="bookingsTable"></tbody>
+    </table>
+  </section>
+
+  <footer>
+    <p>© 2025 Sen Party Rentals Pro — All rights reserved.</p>
+  </footer>
+</main>
+
+<script src="assets/app.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const table = document.getElementById("bookingsTable");
+  const search = document.getElementById("search");
+  let bookings = getBookings();
+
+  function renderTable(data) {
+    table.innerHTML = "";
+    if (data.length === 0) {
+      table.innerHTML = "<tr><td colspan='7' class='muted'>No bookings found.</td></tr>";
+      return;
+    }
+    data.forEach(b => {
+      const balance = b.total - b.deposit;
+      const row = `
+        <tr>
+          <td>${b.date}</td>
+          <td>${b.customer}</td>
+          <td>${b.type === 'pickup' ? '🟡 Pickup' : '🟢 Delivery'}</td>
+          <td>$${b.total}</td>
+          <td>$${b.deposit}</td>
+          <td>$${balance}</td>
+          <td>
+            <button class="btn" onclick="editBooking(${b.id})">Edit</button>
+            <button class="btn" onclick="deleteBooking(${b.id})">Delete</button>
+          </td>
+        </tr>`;
+      table.innerHTML += row;
+    });
+  }
+
+  renderTable(bookings);
+
+  search.addEventListener("input", e => {
+    const q = e.target.value.toLowerCase();
+    const filtered = bookings.filter(b =>
+      b.customer.toLowerCase().includes(q) ||
+      b.type.toLowerCase().includes(q) ||
+      b.date.toLowerCase().includes(q)
+    );
+    renderTable(filtered);
+  });
+});
+</script>
+</body>
+</html>

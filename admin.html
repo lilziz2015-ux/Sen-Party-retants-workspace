@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sen Party Rentals — Admin</title>
+<style>
+  :root{--brand:#0b67a3;--muted:#6b7280;--bg:#f7f9fb;--card:#fff;--green:#19a974;--yellow:#f2c94c}
+  *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:#111}
+  .wrap{max-width:1100px;margin:20px auto;padding:0 16px}
+  .card{background:var(--card);border-radius:14px;box-shadow:0 1px 6px rgba(0,0,0,.06);padding:16px;margin-bottom:12px}
+  h1{margin:0 0 10px}.muted{color:var(--muted)}
+  .row{display:flex;gap:12px;flex-wrap:wrap}.col{flex:1 1 320px;min-width:280px}
+  input,select{width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:10px}
+  .btn{border:none;border-radius:10px;padding:10px 14px;background:#eef2f7;cursor:pointer}
+  .btn-primary{background:var(--brand);color:#fff}
+  .row-card{border:1px solid #eef2f7;border-radius:12px;padding:10px;margin-bottom:8px}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+  .cal-cell{background:#fff;border:1px solid #eef2f7;min-height:90px;border-radius:10px;padding:8px}
+  .badge{display:inline-block;padding:3px 6px;border-radius:999px;font-size:12px;color:#000;margin-top:4px}
+  .badge.delivery{background:var(--green);color:#fff}
+  .badge.pickup{background:var(--yellow);color:#111}
+  .pill{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:700}
+  .pill.delivery{background:var(--green);color:#fff}
+  .pill.pickup{background:var(--yellow);color:#111}
+  @media print {.no-print{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Sen Party Rentals — Admin</h1>
+
+  <div class="card no-print">
+    <h2>Login</h2>
+    <div class="row">
+      <div class="col"><input id="login_email" type="email" placeholder="email@domain.com" /></div>
+      <div class="col"><input id="login_pass" type="password" placeholder="password" /></div>
+      <div class="col"><button id="btn_login" class="btn-primary">Sign In</button> <button id="btn_logout" class="btn">Sign Out</button></div>
+    </div>
+    <div id="who" class="muted"></div>
+    <div id="login_msg" class="muted"></div>
+  </div>
+
+  <div class="card">
+    <h2>Bookings</h2>
+    <div id="bookings"></div>
+  </div>
+
+  <div class="card no-print">
+    <h2>Products</h2>
+    <div class="row">
+      <div class="col"><input id="p_name" placeholder="Name (e.g., Modular Moonbounce)" /></div>
+      <div class="col"><input id="p_cat"  placeholder="Category (Moonbounce, Combo, Add-on...)" value="Moonbounce" /></div>
+      <div class="col"><input id="p_price" type="number" min="0" value="0" placeholder="Price USD" /></div>
+      <div class="col"><button id="p_add" class="btn">Add Product</button></div>
+    </div>
+    <div id="products"></div>
+  </div>
+
+  <div class="card">
+    <h2>Calendar</h2>
+    <div class="no-print" style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+      <button id="prev" class="btn">◀</button>
+      <div id="monthLabel" class="muted"></div>
+      <button id="next" class="btn">▶</button>
+    </div>
+    <div id="cal" class="cal-grid"></div>
+  </div>
+</div>
+
+<!-- 🔐 Firebase config: replace with your keys -->
+<script>
+window.FB_CFG = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs, onSnapshot, orderBy, query, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  const app = initializeApp(window.FB_CFG);
+  const db  = getFirestore(app);
+  const auth= getAuth(app);
+
+  // OPTIONAL: set your EmailJS IDs (for sending invoice by email)
+  const EMAILJS_SERVICE = "";   // e.g. "service_xxx"
+  const EMAILJS_TEMPLATE= "";   // e.g. "template_xxx"
+  const EMAILJS_PUBLIC  = "";   // e.g. "ABC123..."
+  try{ if(EMAILJS_PUBLIC) emailjs.init(EMAILJS_PUBLIC); }catch(e){}
+
+  const who = document.getElementById('who');
+  const loginMsg = document.getElementById('login_msg');
+
+  document.getElementById('btn_login').onclick = async () => {
+    const email = (document.getElementById('login_email').value || "").trim();
+    const pass  = document.getElementById('login_pass').value;
+    try{
+      await signInWithEmailAndPassword(auth, email, pass);
+      loginMsg.textContent = "Signed in ✅";
+    }catch(e){ loginMsg.textContent = "Login failed"; console.error(e); }
+  };
+  document.getElementById('btn_logout').onclick = () => signOut(auth);
+
+  onAuthStateChanged(auth, (u) => {
+    if(u){ who.textContent = "Signed in: " + (u.email||""); loadBookings(); loadProducts(); setupCalendar(); }
+    else { who.textContent = "Not signed in"; document.getElementById('bookings').innerHTML=""; document.getElementById('products').innerHTML=""; }
+  });
+
+  // ---------- Bookings ----------
+  function badgeFor(b){
+    const mode = (b.deliveryType||'delivery').toLowerCase();
+    const cls  = mode === 'pickup' ? 'pickup' : 'delivery';
+    const txt  = mode === 'pickup' ? 'Pickup 🟡' : 'Delivery 🟢';
+    return `<span class="pill ${cls}">${txt}</span>`;
+  }
+
+  function renderBookings(list){
+    const el = document.getElementById('bookings');
+    if(list.length===0){ el.innerHTML = '<div class="muted">No bookings yet</div>'; return; }
+    el.innerHTML = list.map(b => `
+      <div class="row row-card">
+        <div class="col">
+          <div>${badgeFor(b)} <b>${b.customer?.name||""}</b> • ${b.customer?.email||""} • ${b.customer?.phone||""}</div>
+          <div class="muted">${(b.deliveryType==='pickup'?'Pickup at warehouse':'Deliver to')}: ${b.address||""} ${b.zip||""}</div>
+          <div class="muted">${b.eventDate||""} ${b.startTime||""}-${b.endTime||""}</div>
+          <div class="muted">Items: ${b.items?.map(i=>`${i.name} x${i.qty}`).join(", ")||""}</div>
+        </div>
+        <div class="col">
+          <div>Subtotal: <b>$${((b.subtotal||0)/100).toFixed(2)}</b></div>
+          <div>Deposit: <b>$${((b.deposit||0)/100).toFixed(2)}</b></div>
+          <div>Status:
+            <select data-id="${b._id}" class="status">
+              ${["PENDING","QUOTED","CONFIRMED","PAID","CANCELLED"].map(s=>`<option ${b.status===s?"selected":""}>${s}</option>`).join("")}
+            </select>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn" data-inv="${b._id}">Invoice</button>
+            <button class="btn" data-rec="${b._id}">Receipt</button>
+            <button class="btn" data-email="${b._id}">Email</button>
+            <button class="btn" data-del="${b._id}">Delete</button>
+          </div>
+        </div>
+      </div>
+    `).join("");
+
+    el.querySelectorAll("[data-del]").forEach(btn=>{
+      btn.onclick = async () => {
+        const id = btn.getAttribute("data-del");
+        if(confirm("Delete booking?")) await deleteDoc(doc(db,"bookings",id));
+      };
+    });
+    el.querySelectorAll(".status").forEach(sel=>{
+      sel.onchange = async () => {
+        const id = sel.getAttribute("data-id");
+        await updateDoc(doc(db,"bookings",id), { status: sel.value });
+      };
+    });
+    el.querySelectorAll("[data-inv]").forEach(btn=>{
+      btn.onclick = () => openInvoice(list.find(b=>b._id===btn.getAttribute("data-inv")), "invoice");
+    });
+    el.querySelectorAll("[data-rec]").forEach(btn=>{
+      btn.onclick = () => openInvoice(list.find(b=>b._id===btn.getAttribute("data-rec")), "receipt");
+    });
+    el.querySelectorAll("[data-email]").forEach(btn=>{
+      btn.onclick = async () => {
+        const b = list.find(x=>x._id===btn.getAttribute("data-email"));
+        if(!EMAILJS_PUBLIC){ alert("Set EmailJS keys in the file first."); return; }
+        try{
+          await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
+            subject: `Booking ${b.status} — ${b.customer?.name||""}`,
+            html: renderInvoiceHTML(b, "invoice"),
+            to_email: b.customer?.email||""
+          });
+          alert("Email sent!");
+        }catch(e){ alert("Email failed."); console.error(e); }
+      };
+    });
+  }
+
+  function loadBookings(){
+    const qy = query(collection(db,"bookings"), orderBy("createdAt"));
+    onSnapshot(qy, (snap) => {
+      const list = snap.docs.map(d => ({ _id:d.id, ...d.data() }));
+      window.__BOOKINGS__ = list;
+      renderBookings(list);
+      renderCal();
+    });
+  }
+
+  // ---------- Products ----------
+  function renderProducts(list){
+    const el = document.getElementById('products');
+    if(list.length===0){ el.innerHTML = '<div class="muted">No products</div>'; return; }
+    el.innerHTML = list.map(p => `
+      <div class="row row-card">
+        <div class="col"><b>${p.name}</b><div class="muted">${p.category||""}</div></div>
+        <div class="col">
+          <div>Price: <b>$${((p.basePrice||0)/100).toFixed(2)}</b></div>
+          <button class="btn" data-delp="${p._id}">Delete</button>
+        </div>
+      </div>
+    `).join("");
+    el.querySelectorAll("[data-delp]").forEach(btn=>{
+      btn.onclick = async () => {
+        const id = btn.getAttribute("data-delp");
+        if(confirm("Delete product?")) await deleteDoc(doc(db,"products",id));
+      };
+    });
+  }
+
+  async function loadProducts(){
+    const snap = await getDocs(collection(db,"products"));
+    const list = snap.docs.map(d=>({_id:d.id, ...d.data()}));
+    renderProducts(list);
+  }
+
+  document.getElementById('p_add').onclick = async () => {
+    const name = document.getElementById('p_name').value.trim();
+    const category = document.getElementById('p_cat').value.trim();
+    const priceUSD = parseFloat(document.getElementById('p_price').value||"0");
+    if(!name || priceUSD < 0) return;
+    await addDoc(collection(db,"products"), {
+      name, category, basePrice: Math.round(priceUSD*100),
+      active:true, createdAt:new Date().toISOString()
+    });
+    document.getElementById('p_name').value=""; document.getElementById('p_price').value="0";
+    loadProducts();
+  };
+
+  // ---------- Invoice / Receipt ----------
+  function renderInvoiceHTML(b, kind="invoice"){
+    const subtotal = b.subtotal||0;
+    const deposit  = b.deposit||0;
+    const balance  = Math.max(0, subtotal - deposit);
+    const heading  = kind==="receipt" ? "RECEIPT" : "INVOICE";
+    const mode     = (b.deliveryType||'delivery').toLowerCase();
+    const method   = mode === 'pickup' ? 'Pickup (Customer)' : 'Delivery';
+
+    return `
+      <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;max-width:760px;margin:auto">
+        <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
+          <div>
+            <h2 style="margin:0">Sen Party Rentals</h2>
+            <div style="color:#555">11910 Bradley Forest Rd, Manassas, VA</div>
+            <div style="color:#555">Phone: 571-719-9575</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:22px;font-weight:800">${heading}</div>
+            <div style="color:#555">${new Date().toLocaleDateString()}</div>
+          </div>
+        </div>
+        <hr>
+        <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
+          <div>
+            <div><strong>Bill To:</strong></div>
+            <div>${b.customer?.name||""}</div>
+            <div style="color:#555">${b.address||""} ${b.zip||""}</div>
+            <div style="color:#555">${b.customer?.email||""}${b.customer?.phone? " • "+b.customer.phone:""}</div>
+          </div>
+          <div>
+            <div><strong>Event:</strong></div>
+            <div>${b.eventDate||""} ${b.startTime||""}-${b.endTime||""}</div>
+            <div><strong>Method:</strong> ${method}</div>
+          </div>
+        </div>
+        <table style="width:100%;border-collapse:collapse;margin-top:12px">
+          <tr><th style="text-align:left;border:1px solid #e5e9ef;padding:8px">Description</th><th style="text-align:left;border:1px solid #e5e9ef;padding:8px;width:140px">Amount</th></tr>
+          ${(b.items||[]).map(i=>`<tr><td style="border:1px solid #e5e9ef;padding:8px">${i.name} x${i.qty}</td><td style="border:1px solid #e5e9ef;padding:8px"></td></tr>`).join("")}
+          <tr><td style="border:1px solid #e5e9ef;padding:8px"><strong>Subtotal</strong></td><td style="border:1px solid #e5e9ef;padding:8px"><strong>$${(subtotal/100).toFixed(2)}</strong></td></tr>
+          <tr><td style="border:1px solid #e5e9ef;padding:8px">Deposit</td><td style="border:1px solid #e5e9ef;padding:8px">-$${(deposit/100).toFixed(2)}</td></tr>
+          ${kind==="invoice" ? `<tr><td style="border:1px solid #e5e9ef;padding:8px"><strong>Balance Due</strong></td><td style="border:1px solid #e5e9ef;padding:8px"><strong>$${(balance/100).toFixed(2)}</strong></td></tr>` : ""}
+          ${kind==="receipt" ? `<tr><td style="border:1px solid #e5e9ef;padding:8px"><strong>Payment Received</strong></td><td style="border:1px solid #e5e9ef;padding:8px"><strong>$${(subtotal/100).toFixed(2)}</strong></td></tr>` : ""}
+        </table>
+        <div style="color:#555;margin-top:10px">Thank you for your business!</div>
+        <div class="no-print" style="margin-top:14px"><button onclick="window.print()" style="padding:8px 12px;border-radius:8px;background:#0b67a3;color:#fff;border:none">Print</button></div>
+      </div>`;
+  }
+  function openInvoice(b, kind="invoice"){
+    const w = window.open("", "_blank");
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${kind}</title></head><body>${renderInvoiceHTML(b, kind)}</body></html>`);
+    w.document.close();
+  }
+
+  // ---------- Calendar ----------
+  let year, month;
+  function setupCalendar(){ const d = new Date(); year = d.getFullYear(); month = d.getMonth(); renderCal(); }
+  document.getElementById('prev').onclick = ()=>{ month--; if(month<0){month=11;year--;} renderCal(); };
+  document.getElementById('next').onclick = ()=>{ month++; if(month>11){month=0;year++;} renderCal(); };
+
+  function renderCal(){
+    const label = document.getElementById('monthLabel');
+    const calEl = document.getElementById('cal');
+    if(!label || !calEl) return;
+
+    label.textContent = new Date(year, month, 1).toLocaleString(undefined,{month:'long',year:'numeric'});
+    calEl.innerHTML = "";
+    const first = new Date(year, month, 1);
+    const startDay = first.getDay();
+    const daysInMonth = new Date(year, month+1, 0).getDate();
+    for(let i=0;i<startDay;i++){ const pad=document.createElement('div'); pad.className='cal-cell'; calEl.appendChild(pad); }
+    for(let d=1; d<=daysInMonth; d++){
+      const cell = document.createElement('div'); cell.className='cal-cell';
+      const dt = new Date(year, month, d).toISOString().slice(0,10);
+      cell.innerHTML = `<div style="font-weight:700">${d}</div>`;
+      const day = (window.__BOOKINGS__||[]).filter(b=> (b.eventDate||"").slice(0,10) === dt);
+      day.forEach(b=>{
+        const mode = (b.deliveryType||'delivery').toLowerCase();
+        const cls = mode === 'pickup' ? 'pickup' : 'delivery';
+        const badge = document.createElement('div');
+        badge.className = 'badge ' + cls;
+        badge.textContent = (b.customer?.name||"") + (b.startTime? " "+b.startTime:"");
+        badge.onclick = ()=> openInvoice(b,"invoice");
+        cell.appendChild(badge);
+      });
+      calEl.appendChild(cell);
+    }
+  }
+</script>
+</body>
+</html>

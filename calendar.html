@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calendar — Sen Party Rentals Pro</title>
+<link rel="stylesheet" href="assets/style.css">
+<style>
+.calendar-container {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.1);
+}
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  text-align: center;
+}
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.calendar-day {
+  background: #f9f9fb;
+  border-radius: 8px;
+  padding: 8px;
+  min-height: 90px;
+  position: relative;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.calendar-day:hover {
+  background: #eef6ff;
+}
+.calendar-day h4 {
+  margin: 0;
+  font-size: 0.9rem;
+}
+.event {
+  font-size: 0.75rem;
+  border-radius: 6px;
+  margin-top: 4px;
+  padding: 2px 4px;
+  color: #fff;
+}
+.event.delivery { background: #19a974; }
+.event.pickup { background: #f2c94c; color: #000; }
+.day-empty { color: #aaa; }
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  visibility: hidden;
+}
+.modal.active { visibility: visible; }
+.modal-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  width: 90%;
+  max-width: 400px;
+}
+.modal-content h3 { margin-top: 0; }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="logo">
+    <img src="assets/logo.png" alt="Logo">
+    <h2>Sen Party Rentals Pro</h2>
+  </div>
+  <nav>
+    <a href="index.html">🏠 Dashboard</a>
+    <a href="bookings.html">📅 Bookings</a>
+    <a href="calendar.html" class="active">🗓️ Calendar</a>
+    <a href="customers.html">👥 Customers</a>
+    <a href="invoices.html">🧾 Invoices</a>
+    <a href="delivery.html">🚚 Delivery</a>
+    <a href="settings.html">⚙️ Settings</a>
+  </nav>
+</aside>
+
+<!-- Main -->
+<main class="main">
+  <header class="topbar">
+    <div>
+      <h1>Booking Calendar</h1>
+      <p class="muted">View all bookings by date and type.</p>
+    </div>
+  </header>
+
+  <section class="card calendar-container">
+    <div class="calendar-header">
+      <button id="prevMonth" class="btn">◀</button>
+      <h2 id="monthLabel"></h2>
+      <button id="nextMonth" class="btn">▶</button>
+    </div>
+    <div class="calendar-grid" id="calendarGrid"></div>
+  </section>
+
+  <footer>
+    <p>© 2025 Sen Party Rentals Pro — Calendar</p>
+  </footer>
+</main>
+
+<!-- Booking details modal -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h3 id="modalDate"></h3>
+    <ul id="modalList"></ul>
+    <button id="closeModal" class="btn-primary" style="margin-top:10px;">Close</button>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const grid = document.getElementById("calendarGrid");
+  const monthLabel = document.getElementById("monthLabel");
+  const modal = document.getElementById("modal");
+  const modalDate = document.getElementById("modalDate");
+  const modalList = document.getElementById("modalList");
+  const closeModal = document.getElementById("closeModal");
+  let bookings = getBookings(); // from app.js
+  let current = new Date();
+
+  function renderCalendar() {
+    grid.innerHTML = "";
+    const year = current.getFullYear();
+    const month = current.getMonth();
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month+1, 0).getDate();
+
+    monthLabel.textContent = current.toLocaleString("default", { month: "long", year: "numeric" });
+
+    // Fill empty cells before first day
+    for(let i=0; i<firstDay; i++){
+      const empty = document.createElement("div");
+      empty.classList.add("calendar-day","day-empty");
+      grid.appendChild(empty);
+    }
+
+    // Fill days
+    for(let day=1; day<=daysInMonth; day++){
+      const dateISO = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+      const dayBookings = bookings.filter(b => b.date === dateISO);
+      const cell = document.createElement("div");
+      cell.classList.add("calendar-day");
+      cell.innerHTML = `<h4>${day}</h4>`;
+      dayBookings.forEach(b => {
+        const event = document.createElement("div");
+        event.classList.add("event", b.type);
+        event.textContent = b.customer || "Booking";
+        cell.appendChild(event);
+      });
+      cell.addEventListener("click", () => openModal(dateISO, dayBookings));
+      grid.appendChild(cell);
+    }
+  }
+
+  function openModal(date, list){
+    modal.classList.add("active");
+    modalDate.textContent = `Bookings on ${date}`;
+    modalList.innerHTML = list.length
+      ? list.map(b => `<li>${b.customer} (${b.type === "delivery" ? "🟢 Delivery" : "🟡 Pickup"}) — ${b.notes || ""}</li>`).join("")
+      : "<li>No bookings.</li>";
+  }
+  closeModal.onclick = ()=> modal.classList.remove("active");
+
+  document.getElementById("prevMonth").onclick = ()=>{ current.setMonth(current.getMonth()-1); renderCalendar(); };
+  document.getElementById("nextMonth").onclick = ()=>{ current.setMonth(current.getMonth()+1); renderCalendar(); };
+
+  renderCalendar();
+});
+</script>
+</body>
+</html>
