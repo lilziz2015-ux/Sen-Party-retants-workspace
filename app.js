@@ -1,6 +1,6 @@
 /* Sen Party Rentals Pro – App Script (v1.0)
    Local-only edition — simple, fast, and offline-ready
-   by ChatGPT + Mamadou Samb
+   by ChatGPT + Saliou
 */
 
 // ==== UTILITIES ====
