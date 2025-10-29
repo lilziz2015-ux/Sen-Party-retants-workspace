@@ -4,232 +4,18 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Dashboard — Sen Party Rentals Pro</title>
+
 <link rel="stylesheet" href="assets/style.css" />
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link rel="manifest" href="manifest.json">
-<style>
-:root {
-  --brand: #0078ff;
-  --brand-light: #e6f0ff;
-  --brand-dark: #004c99;
-  --muted: #6b7280;
-  --bg: #f8fafc;
-  --white: #fff;
-}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  font-family: "Segoe UI", sans-serif;
-  background: var(--bg);
-  color: #1f2937;
-  display: flex;
-  min-height: 100vh;
-}
-
-/* Sidebar */
-.sidebar {
-  width: 260px;
-  background: var(--white);
-  border-right: 1px solid #e5e7eb;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  padding: 1rem;
-  transition: transform 0.3s ease;
-  z-index: 1000;
-}
-.sidebar.hidden { transform: translateX(-100%); }
-.sidebar.show { transform: translateX(0); }
-
-.sidebar .logo {
-  text-align: center;
-}
-.sidebar img {
-  width: 80px;
-  border-radius: 50%;
-  margin-bottom: 0.5rem;
-}
-.sidebar nav {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  margin-top: 1rem;
-}
-.sidebar nav a {
-  text-decoration: none;
-  color: #1f2937;
-  padding: 0.6rem 0.8rem;
-  border-radius: 6px;
-  transition: 0.2s;
-}
-.sidebar nav a:hover,
-.sidebar nav a.active {
-  background: var(--brand-light);
-  color: var(--brand-dark);
-  font-weight: 600;
-}
-
-.btn-logout {
-  width: 100%;
-  background: #ef4444;
-  color: #fff;
-  border: none;
-  padding: 0.7rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.2s;
-}
-.btn-logout:hover {
-  background: #dc2626;
-}
-
-/* Main */
-.main {
-  flex: 1;
-  margin-left: 260px;
-  padding: 2rem;
-}
-
-/* Topbar */
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-bottom: 2rem;
-}
-.menu-toggle {
-  background: var(--brand);
-  color: #fff;
-  border: none;
-  padding: 0.6rem 0.9rem;
-  border-radius: 6px;
-  font-size: 1.2rem;
-  cursor: pointer;
-}
-.menu-toggle:hover { background: var(--brand-dark); }
-
-.muted { color: var(--muted); margin-top: -0.5rem; }
-
-.biz-info {
-  display: flex;
-  flex-direction: column;
-  text-align: right;
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
-/* Cards */
-.card {
-  background: var(--white);
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  margin-bottom: 1.5rem;
-  padding: 1.5rem;
-}
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-bottom: 1rem;
-}
-
-/* Buttons */
-.btn, .btn-primary, .btn-outline, .btn-success {
-  border: none;
-  cursor: pointer;
-  padding: 0.6rem 1rem;
-  border-radius: 6px;
-  font-weight: 600;
-  transition: 0.2s;
-}
-.btn { background: #e5e7eb; }
-.btn:hover { background: #d1d5db; }
-.btn-primary { background: var(--brand); color: #fff; }
-.btn-primary:hover { background: var(--brand-dark); }
-.btn-outline {
-  background: transparent;
-  border: 1px solid var(--brand);
-  color: var(--brand-dark);
-}
-.btn-outline:hover { background: var(--brand-light); }
-.btn-success { background: #16a34a; color: #fff; }
-.btn-success:hover { background: #15803d; }
-
-/* Stats Grid */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-.stat {
-  text-align: center;
-  background: linear-gradient(145deg, #ffffff, #f0f4f9);
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 1rem;
-  transition: 0.3s;
-}
-.stat:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-}
-.stat-value {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--brand-dark);
-  margin-top: 0.5rem;
-}
-
-/* Agenda */
-.agenda-list {
-  list-style: none;
-  margin-top: 1rem;
-  padding-left: 0;
-}
-.agenda-list li {
-  background: #f9fafb;
-  border-radius: 8px;
-  padding: 0.8rem 1rem;
-  margin-bottom: 0.6rem;
-  border-left: 5px solid var(--brand);
-  transition: 0.2s;
-}
-.agenda-list li:hover { background: var(--brand-light); }
-
-footer {
-  text-align: center;
-  font-size: 0.85rem;
-  color: var(--muted);
-  margin-top: 2rem;
-}
-
-/* Responsive */
-@media (max-width: 900px) {
-  .main { margin-left: 0; }
-  .menu-toggle { display: block; margin-bottom: 1rem; }
-  .sidebar.hidden { transform: translateX(-100%); }
-  .sidebar.show { transform: translateX(0); }
-  body { overflow-x: hidden; }
-}
-</style>
 </head>
-
 <body>
 
 <!-- Sidebar -->
 <aside class="sidebar" id="sidebar">
   <div class="logo">
-    <img src="02B58D79-6737-47EA-8099-73006879E55A Small.jpeg" alt="Sen Party Rentals Logo" />
+    <img src="02B58D79-6737-47EA-8099-73006879E55A Small.jpeg" alt="Logo">
     <h2>Sen Party Rentals Pro</h2>
   </div>
   <nav>
@@ -241,7 +27,6 @@ footer {
     <a href="delivery.html">🚚 Delivery</a>
     <a href="settings.html">⚙️ Settings</a>
   </nav>
-  <button id="logoutBtn" class="btn-logout">Logout</button>
 </aside>
 
 <!-- Main -->
@@ -250,53 +35,63 @@ footer {
     <button class="menu-toggle" id="menuToggle">☰</button>
     <div>
       <h1>Dashboard</h1>
-      <p class="muted">Welcome to Sen Party Rentals Pro — manage your business with ease.</p>
-    </div>
-    <div class="biz-info">
-      <span>📞 571-719-9575</span>
-      <span>📍 11910 Bradley Forest Rd, Manassas, VA</span>
+      <p class="muted">Welcome back! Here's your business overview.</p>
     </div>
   </header>
 
-  <!-- Reminder Toolbar -->
+  <!-- Stats Section -->
   <section class="card">
-    <div class="card-header">
-      <h2>Reminders & Actions</h2>
-      <div style="display:flex; gap:.5rem; flex-wrap:wrap">
-        <button class="btn" onclick="checkReminders()">↻ Check Reminders</button>
-        <button class="btn-primary" onclick="emailAllDue()">✉️ Email All Due</button>
-        <button class="btn-outline" onclick="smsAllDue()">📱 SMS All Due</button>
-        <button class="btn-success" onclick="window.location.href='bookings.html'">+ Add Booking</button>
+    <h2>Quick Stats</h2>
+    <div class="stats-grid">
+      <div class="stat">
+        <h3>Total Bookings</h3>
+        <p class="stat-value" id="statBookings">0</p>
+      </div>
+      <div class="stat">
+        <h3>Today’s Bookings</h3>
+        <p class="stat-value" id="statToday">0</p>
+      </div>
+      <div class="stat">
+        <h3>Total Revenue</h3>
+        <p class="stat-value" id="statRevenue">$0.00</p>
+      </div>
+      <div class="stat">
+        <h3>Pending Balance</h3>
+        <p class="stat-value" id="statPending">$0.00</p>
       </div>
     </div>
   </section>
 
-  <!-- Stats -->
-  <section class="stats-grid">
-    <div class="card stat"><h3>Upcoming Events</h3><p class="stat-value">12</p></div>
-    <div class="card stat"><h3>Total Bookings</h3><p class="stat-value">84</p></div>
-    <div class="card stat"><h3>Unpaid Balances</h3><p class="stat-value">$1,240</p></div>
-    <div class="card stat"><h3>Revenue (Month)</h3><p class="stat-value">$12,350</p></div>
-  </section>
-
-  <!-- Agenda -->
+  <!-- Recent Bookings -->
   <section class="card">
-    <div class="card-header">
-      <h2>Today's Agenda</h2>
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h2>Recent Bookings</h2>
       <button class="btn-primary" onclick="window.location.href='bookings.html'">+ Add Booking</button>
     </div>
-    <ul class="agenda-list">
-      <li><b>10:00 AM</b> — Delivery to <b>John Doe</b> (🟢 Moonbounce)</li>
-      <li><b>1:00 PM</b> — Pickup from <b>Smith Family</b> (🟡 Chairs)</li>
-      <li><b>4:00 PM</b> — Delivery to <b>Williams Park</b> (🟢 Water Slide)</li>
-    </ul>
+    <div style="overflow-x:auto;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Customer</th>
+            <th>Type</th>
+            <th>Total</th>
+            <th>Deposit</th>
+            <th>Balance</th>
+          </tr>
+        </thead>
+        <tbody id="recentTable">
+          <tr><td colspan="6" class="muted">No bookings found.</td></tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 
   <!-- Chart -->
   <section class="card">
-    <div class="card-header">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
       <h2>Revenue Overview</h2>
-      <button class="btn-outline">📊 View Reports</button>
+      <button class="btn-outline" onclick="window.location.href='invoices.html'">📊 View Reports</button>
     </div>
     <canvas id="revenueChart" height="100"></canvas>
   </section>
@@ -306,43 +101,89 @@ footer {
   </footer>
 </main>
 
-<script>
-const sidebar = document.getElementById("sidebar");
-const toggleBtn = document.getElementById("menuToggle");
-toggleBtn.addEventListener("click", () => {
-  sidebar.classList.toggle("hidden");
-  sidebar.classList.toggle("show");
+<script type="module">
+import { getBookings, formatCurrency, calcBalance } from './assets/app.js';
+
+// --- Sidebar Toggle ---
+const sidebar = document.getElementById('sidebar');
+const toggleBtn = document.getElementById('menuToggle');
+toggleBtn.addEventListener('click', () => {
+  sidebar.classList.toggle('show');
 });
 
-// Chart.js
-document.addEventListener("DOMContentLoaded", () => {
-  const ctx = document.getElementById("revenueChart").getContext("2d");
+// --- Dashboard Logic ---
+function updateDashboard() {
+  const bookings = getBookings();
+  const today = new Date().toISOString().slice(0, 10);
+
+  const totalBookings = bookings.length;
+  const todayBookings = bookings.filter(b => b.date === today).length;
+  const totalRevenue = bookings.reduce((s, b) => s + (parseFloat(b.total) || 0), 0);
+  const pending = bookings.reduce((s, b) => s + (parseFloat(b.total - b.deposit) || 0), 0);
+
+  document.getElementById('statBookings').textContent = totalBookings;
+  document.getElementById('statToday').textContent = todayBookings;
+  document.getElementById('statRevenue').textContent = formatCurrency(totalRevenue);
+  document.getElementById('statPending').textContent = formatCurrency(pending);
+
+  // Render Recent Bookings
+  const table = document.getElementById('recentTable');
+  table.innerHTML = "";
+  const recent = [...bookings].sort((a, b) => b.id - a.id).slice(0, 5);
+
+  if (recent.length === 0) {
+    table.innerHTML = "<tr><td colspan='6' class='muted'>No bookings found.</td></tr>";
+  } else {
+    recent.forEach(b => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${b.date}</td>
+        <td>${b.customer}</td>
+        <td>${b.type === 'pickup' ? '🟡 Pickup' : '🟢 Delivery'}</td>
+        <td>${formatCurrency(b.total)}</td>
+        <td>${formatCurrency(b.deposit)}</td>
+        <td>${formatCurrency(calcBalance(b.total, b.deposit))}</td>`;
+      table.appendChild(tr);
+    });
+  }
+
+  // Update Chart
+  renderChart(bookings);
+}
+
+// --- Chart.js ---
+function renderChart(bookings) {
+  const monthly = {};
+  bookings.forEach(b => {
+    const month = new Date(b.date).toLocaleString('default', { month: 'short' });
+    monthly[month] = (monthly[month] || 0) + parseFloat(b.total || 0);
+  });
+
+  const ctx = document.getElementById('revenueChart');
   new Chart(ctx, {
-    type: "line",
+    type: 'bar',
     data: {
-      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
+      labels: Object.keys(monthly),
       datasets: [{
-        label: "Monthly Revenue ($)",
-        data: [1200, 1800, 2200, 3100, 3800, 4500, 4800, 5200],
-        fill: true,
-        backgroundColor: "rgba(0, 102, 204, 0.15)",
-        borderColor: "#0066cc",
-        tension: 0.3,
-        borderWidth: 3,
-        pointRadius: 4,
-        pointBackgroundColor: "#004999"
+        label: 'Revenue',
+        data: Object.values(monthly),
+        backgroundColor: '#0078ff',
+        borderRadius: 6,
       }]
     },
     options: {
-      responsive: true,
       plugins: { legend: { display: false } },
       scales: {
-        y: { beginAtZero: true, grid: { color: "#eef2f7" } },
-        x: { grid: { display: false } }
+        y: { beginAtZero: true, ticks: { color: '#333' } },
+        x: { ticks: { color: '#333' } }
       }
     }
   });
-});
+}
+
+updateDashboard();
+window.addEventListener('bookingsUpdated', updateDashboard);
 </script>
+
 </body>
 </html>
