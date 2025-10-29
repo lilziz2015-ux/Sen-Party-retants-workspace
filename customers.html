@@ -5,160 +5,104 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Customers — Sen Party Rentals Pro</title>
 <link rel="stylesheet" href="assets/style.css">
-<link rel="manifest" href="manifest.json">
 <style>
-  :root {
-    --brand: #0078ff;
-    --brand-dark: #004c99;
-    --muted: #6b7280;
-    --bg: #f8fafc;
-    --white: #fff;
-  }
-
-  body {
-    margin: 0;
-    font-family: "Segoe UI", sans-serif;
-    background: var(--bg);
-    color: #1f2937;
-    display: flex;
-    min-height: 100vh;
-  }
-
-  /* Sidebar */
-  .sidebar {
-    width: 260px;
-    background: var(--white);
-    border-right: 1px solid #e5e7eb;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    padding: 1rem;
-    transition: transform 0.3s ease;
-    z-index: 1000;
-  }
-
-  .sidebar.hidden { transform: translateX(-100%); }
-
-  .sidebar .logo { text-align: center; }
-  .sidebar img { width: 80px; border-radius: 50%; margin-bottom: 0.5rem; }
-
-  .sidebar nav {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    margin-top: 1rem;
-  }
-
-  .sidebar nav a {
-    text-decoration: none;
-    color: #1f2937;
-    padding: 0.6rem 0.8rem;
-    border-radius: 6px;
-    transition: 0.2s;
-  }
-
-  .sidebar nav a:hover,
-  .sidebar nav a.active {
-    background: var(--brand-light, #e6f0ff);
-    color: var(--brand-dark);
-    font-weight: 600;
-  }
-
-  /* Main */
-  .main {
-    flex: 1;
-    margin-left: 260px;
-    padding: 2rem;
-  }
-
-  .topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-bottom: 2rem;
-  }
-
-  .menu-toggle {
-    display: none;
-    background: var(--brand);
-    color: #fff;
-    border: none;
-    padding: 0.6rem 0.9rem;
-    border-radius: 6px;
-    font-size: 1.2rem;
-    cursor: pointer;
-  }
-
-  .muted { color: var(--muted); }
-
-  .card {
-    background: var(--white);
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    margin-bottom: 1.5rem;
-    padding: 1.5rem;
-  }
-
-  /* Table */
-  .table-container {
-    overflow-x: auto;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 700px;
-  }
-
-  th, td {
-    padding: 0.75rem 1rem;
-    text-align: left;
-    border-bottom: 1px solid #e5e7eb;
-  }
-
-  th {
-    background: #f3f4f6;
-    color: #374151;
-    font-weight: 600;
-  }
-
-  tr:hover {
-    background: #f9fafb;
-  }
-
-  #searchCustomer {
-    margin-bottom: 1rem;
-    width: 100%;
-    padding: 0.6rem;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    font-size: 1rem;
-  }
-
-  footer {
-    text-align: center;
-    font-size: 0.85rem;
-    color: var(--muted);
-    margin-top: 2rem;
-  }
-
-  @media (max-width: 900px) {
-    .main { margin-left: 0; }
-    .menu-toggle { display: block; margin-bottom: 1rem; }
-    .sidebar { transform: translateX(-100%); }
-    .sidebar.show { transform: translateX(0); }
-  }
+:root {
+  --brand: #0078ff;
+  --brand-dark: #004c99;
+  --muted: #6b7280;
+  --bg: #f8fafc;
+  --white: #fff;
+}
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: #1f2937;
+  display: flex;
+  min-height: 100vh;
+}
+.sidebar {
+  width: 260px;
+  background: var(--white);
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  padding: 1rem;
+  z-index: 1000;
+}
+.sidebar .logo { text-align: center; }
+.sidebar img { width: 80px; border-radius: 50%; margin-bottom: 0.5rem; }
+.sidebar nav { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 1rem; }
+.sidebar nav a {
+  text-decoration: none; color: #1f2937; padding: 0.6rem 0.8rem;
+  border-radius: 6px; transition: 0.2s;
+}
+.sidebar nav a:hover, .sidebar nav a.active {
+  background: #e6f0ff; color: var(--brand-dark); font-weight: 600;
+}
+.main {
+  flex: 1;
+  margin-left: 260px;
+  padding: 2rem;
+}
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+.menu-toggle {
+  display: none;
+  background: var(--brand);
+  color: #fff;
+  border: none;
+  padding: 0.6rem 0.9rem;
+  border-radius: 6px;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+.card {
+  background: var(--white);
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+}
+.muted { color: var(--muted); }
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th, td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+th {
+  background: #f3f4f6;
+  color: #374151;
+  font-weight: 600;
+}
+tr:hover { background: #f9fafb; }
+footer {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: 2rem;
+}
+@media (max-width: 900px) {
+  .main { margin-left: 0; }
+  .menu-toggle { display: block; margin-bottom: 1rem; }
+}
 </style>
 </head>
-
 <body>
+
 <!-- Sidebar -->
-<aside class="sidebar hidden" id="sidebar">
+<aside class="sidebar" id="sidebar">
   <div class="logo">
     <img src="02B58D79-6737-47EA-8099-73006879E55A Small.jpeg" alt="Logo">
     <h2>Sen Party Rentals Pro</h2>
@@ -180,15 +124,15 @@
     <button class="menu-toggle" id="menuToggle">☰</button>
     <div>
       <h1>Customers</h1>
-      <p class="muted">Manage your client list and booking history.</p>
+      <p class="muted">View and manage all clients and booking history.</p>
     </div>
   </header>
 
   <section class="card">
     <h2>Customer List</h2>
-    <input id="searchCustomer" placeholder="Search by name or email...">
-    <div class="table-container">
-      <table class="table">
+    <input id="searchCustomer" placeholder="Search by name or email..." style="margin-bottom:1rem;width:100%;padding:0.6rem;border-radius:8px;border:1px solid #ddd;">
+    <div style="overflow-x:auto;">
+      <table>
         <thead>
           <tr>
             <th>Name</th>
@@ -209,86 +153,76 @@
   </footer>
 </main>
 
-<script src="assets/app.js"></script>
-<script>
-  // Sidebar toggle
-  const sidebar = document.getElementById('sidebar');
-  const toggleBtn = document.getElementById('menuToggle');
-  toggleBtn.addEventListener('click', () => {
-    sidebar.classList.toggle('hidden');
-    sidebar.classList.toggle('show');
+<script type="module">
+import { getBookings, formatCurrency } from './assets/app.js';
+
+const sidebar = document.getElementById("sidebar");
+document.getElementById("menuToggle").addEventListener("click", () => {
+  sidebar.classList.toggle("show");
+});
+
+const table = document.getElementById("customersTable");
+const search = document.getElementById("searchCustomer");
+
+function buildCustomers() {
+  const bookings = getBookings();
+  const customers = {};
+
+  bookings.forEach(b => {
+    const key = b.email || b.customer;
+    if (!customers[key]) {
+      customers[key] = {
+        name: b.customer,
+        email: b.email || "",
+        phone: b.phone || "",
+        total: 0,
+        count: 0,
+        lastDate: b.date
+      };
+    }
+    customers[key].total += b.total;
+    customers[key].count++;
+    if (b.date > customers[key].lastDate) customers[key].lastDate = b.date;
   });
 
-  document.addEventListener("DOMContentLoaded", () => {
-    const table = document.getElementById("customersTable");
-    const search = document.getElementById("searchCustomer");
-    let bookings = [];
+  return Object.values(customers);
+}
 
-    try {
-      bookings = getBookings ? getBookings() : [];
-    } catch {
-      bookings = [];
-    }
-
-    if (!Array.isArray(bookings) || bookings.length === 0) {
-      table.innerHTML = "<tr><td colspan='6' class='muted'>No customer data available.</td></tr>";
-      return;
-    }
-
-    // Aggregate customer data
-    const customers = {};
-    bookings.forEach(b => {
-      if (!b.customer) return;
-      if (!customers[b.customer]) {
-        customers[b.customer] = {
-          name: b.customer,
-          email: b.email || "",
-          phone: b.phone || "",
-          totalSpent: 0,
-          count: 0,
-          lastDate: b.date || ""
-        };
-      }
-      customers[b.customer].totalSpent += Number(b.total || 0);
-      customers[b.customer].count += 1;
-      if (b.date && b.date > customers[b.customer].lastDate)
-        customers[b.customer].lastDate = b.date;
-    });
-
-    const allCustomers = Object.values(customers);
-
-    function renderTable(data) {
-      table.innerHTML = "";
-      if (data.length === 0) {
-        table.innerHTML = "<tr><td colspan='6' class='muted'>No customers found.</td></tr>";
-        return;
-      }
-      data.forEach(c => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${c.name}</td>
-          <td>${c.email}</td>
-          <td>${c.phone}</td>
-          <td>$${c.totalSpent.toFixed(2)}</td>
-          <td>${c.count}</td>
-          <td>${c.lastDate || "-"}</td>
-        `;
-        table.appendChild(row);
-      });
-    }
-
-    renderTable(allCustomers);
-
-    // Search
-    search.addEventListener("input", e => {
-      const q = e.target.value.toLowerCase();
-      const filtered = allCustomers.filter(c =>
-        c.name.toLowerCase().includes(q) ||
-        c.email.toLowerCase().includes(q)
-      );
-      renderTable(filtered);
-    });
+function renderCustomers(list) {
+  table.innerHTML = "";
+  if (!list.length) {
+    table.innerHTML = "<tr><td colspan='6' class='muted'>No customers found.</td></tr>";
+    return;
+  }
+  list.forEach(c => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${c.name}</td>
+      <td>${c.email}</td>
+      <td>${c.phone}</td>
+      <td>${formatCurrency(c.total)}</td>
+      <td>${c.count}</td>
+      <td>${c.lastDate}</td>`;
+    table.appendChild(row);
   });
+}
+
+let customers = buildCustomers();
+renderCustomers(customers);
+
+search.addEventListener("input", e => {
+  const q = e.target.value.toLowerCase();
+  const filtered = customers.filter(c =>
+    c.name.toLowerCase().includes(q) ||
+    c.email.toLowerCase().includes(q)
+  );
+  renderCustomers(filtered);
+});
+
+window.addEventListener("bookingsUpdated", () => {
+  customers = buildCustomers();
+  renderCustomers(customers);
+});
 </script>
 </body>
 </html>

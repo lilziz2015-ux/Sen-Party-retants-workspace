@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calendar — Sen Party Rentals Pro</title>
 <link rel="stylesheet" href="assets/style.css">
-<link rel="manifest" href="manifest.json">
 <style>
 :root {
   --brand: #0078ff;
@@ -13,8 +12,6 @@
   --muted: #6b7280;
   --bg: #f8fafc;
   --white: #fff;
-  --green: #19a974;
-  --yellow: #f2c94c;
 }
 
 body {
@@ -33,14 +30,11 @@ body {
   border-right: 1px solid #e5e7eb;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   position: fixed;
   top: 0; left: 0; bottom: 0;
   padding: 1rem;
-  transition: transform 0.3s ease;
   z-index: 1000;
 }
-.sidebar.hidden { transform: translateX(-100%); }
 .sidebar .logo { text-align: center; }
 .sidebar img { width: 80px; border-radius: 50%; margin-bottom: 0.5rem; }
 .sidebar nav { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 1rem; }
@@ -53,94 +47,82 @@ body {
 }
 
 /* Main */
-.main { flex: 1; margin-left: 260px; padding: 2rem; }
+.main {
+  flex: 1;
+  margin-left: 260px;
+  padding: 2rem;
+}
 .topbar {
-  display: flex; justify-content: space-between; align-items: center;
-  flex-wrap: wrap; margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
 }
 .menu-toggle {
-  display: none; background: var(--brand); color: #fff; border: none;
-  padding: 0.6rem 0.9rem; border-radius: 6px; font-size: 1.2rem; cursor: pointer;
+  display: none;
+  background: var(--brand);
+  color: #fff;
+  border: none;
+  padding: 0.6rem 0.9rem;
+  border-radius: 6px;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+.card {
+  background: var(--white);
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
 }
 .muted { color: var(--muted); }
 
-/* Calendar */
-.calendar-container {
-  background: var(--white);
-  border-radius: 12px;
-  padding: 1rem;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-}
-.calendar-header {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 1rem;
-}
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
-}
-.calendar-day {
-  background: #fff;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  padding: 8px;
-  min-height: 100px;
-  position: relative;
-  transition: 0.2s;
-  cursor: pointer;
-}
-.calendar-day:hover {
-  background: #eef6ff;
-}
-.calendar-day h4 {
-  margin: 0;
-  font-size: 0.9rem;
-  font-weight: 600;
+.date-group {
+  margin-bottom: 1.5rem;
+  border-left: 4px solid var(--brand);
+  padding-left: 1rem;
 }
 .event {
-  font-size: 0.75rem;
-  border-radius: 6px;
-  margin-top: 4px;
-  padding: 2px 4px;
-  color: #fff;
-}
-.event.delivery { background: var(--green); }
-.event.pickup { background: var(--yellow); color: #000; }
-
-/* Modal */
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  visibility: hidden;
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  margin: 0.5rem 0;
 }
-.modal.active { visibility: visible; }
-.modal-content {
-  background: #fff;
-  border-radius: 12px;
-  padding: 20px;
-  width: 90%;
-  max-width: 400px;
+.event:hover { background: #e6f0ff; }
+.event .left {
+  display: flex;
+  flex-direction: column;
 }
-.modal-content h3 { margin-top: 0; }
+.event .right {
+  text-align: right;
+}
+.event .type {
+  font-weight: 600;
+}
+.event .delivery { color: green; }
+.event .pickup { color: goldenrod; }
+
+footer {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: 2rem;
+}
 
 @media (max-width: 900px) {
   .main { margin-left: 0; }
   .menu-toggle { display: block; margin-bottom: 1rem; }
-  .sidebar { transform: translateX(-100%); }
-  .sidebar.show { transform: translateX(0); }
 }
 </style>
 </head>
-
 <body>
 
 <!-- Sidebar -->
-<aside class="sidebar hidden" id="sidebar">
+<aside class="sidebar" id="sidebar">
   <div class="logo">
     <img src="02B58D79-6737-47EA-8099-73006879E55A Small.jpeg" alt="Logo">
     <h2>Sen Party Rentals Pro</h2>
@@ -161,121 +143,112 @@ body {
   <header class="topbar">
     <button class="menu-toggle" id="menuToggle">☰</button>
     <div>
-      <h1>Booking Calendar</h1>
+      <h1>Calendar</h1>
       <p class="muted">View all bookings by date and type.</p>
     </div>
   </header>
 
-  <section class="calendar-container">
-    <div class="calendar-header">
-      <button id="prevMonth" class="btn">◀</button>
-      <h2 id="monthLabel"></h2>
-      <button id="nextMonth" class="btn">▶</button>
+  <section class="card">
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:center;">
+      <input id="monthPicker" type="month" style="padding:0.6rem;border-radius:8px;border:1px solid #ddd;">
+      <input id="search" placeholder="Search by name or type..." style="padding:0.6rem;flex:1;border-radius:8px;border:1px solid #ddd;">
     </div>
-    <div class="calendar-grid" id="calendarGrid"></div>
+  </section>
+
+  <section class="card" id="calendarContent">
+    <h2>Bookings</h2>
+    <p class="muted">No bookings found.</p>
   </section>
 
   <footer>
-    <p>© 2025 Sen Party Rentals Pro — Calendar</p>
+    <p>© 2025 Sen Party Rentals Pro — All rights reserved.</p>
   </footer>
 </main>
 
-<!-- Booking details modal -->
-<div class="modal" id="modal">
-  <div class="modal-content">
-    <h3 id="modalDate"></h3>
-    <ul id="modalList"></ul>
-    <button id="closeModal" class="btn-primary" style="margin-top:10px;">Close</button>
-  </div>
-</div>
-
 <script type="module">
-// === Sidebar toggle ===
+// === Import shared logic ===
+import { getBookings } from './assets/app.js';
+
+// Sidebar toggle
 const sidebar = document.getElementById("sidebar");
-const toggleBtn = document.getElementById("menuToggle");
-toggleBtn.addEventListener("click", () => {
-  sidebar.classList.toggle("hidden");
+document.getElementById("menuToggle").addEventListener("click", () => {
   sidebar.classList.toggle("show");
 });
 
-// === Local storage sync ===
-function getBookings() {
-  return JSON.parse(localStorage.getItem("spr.bookings") || "[]");
+// Build calendar
+function groupByDate(bookings) {
+  const map = {};
+  bookings.forEach(b => {
+    if (!map[b.date]) map[b.date] = [];
+    map[b.date].push(b);
+  });
+  return Object.entries(map).sort((a,b) => new Date(a[0]) - new Date(b[0]));
 }
 
-// === Calendar logic ===
-document.addEventListener("DOMContentLoaded", () => {
-  const grid = document.getElementById("calendarGrid");
-  const monthLabel = document.getElementById("monthLabel");
-  const modal = document.getElementById("modal");
-  const modalDate = document.getElementById("modalDate");
-  const modalList = document.getElementById("modalList");
-  const closeModal = document.getElementById("closeModal");
+function renderCalendar(bookings) {
+  const container = document.getElementById("calendarContent");
+  container.innerHTML = "";
 
-  let current = new Date();
-  let bookings = getBookings();
-
-  function renderCalendar() {
-    grid.innerHTML = "";
-    const year = current.getFullYear();
-    const month = current.getMonth();
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    monthLabel.textContent = current.toLocaleString("default", { month: "long", year: "numeric" });
-
-    // Fill empty days before the first
-    for (let i = 0; i < firstDay; i++) {
-      const empty = document.createElement("div");
-      empty.classList.add("calendar-day");
-      grid.appendChild(empty);
-    }
-
-    // Fill calendar days
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dateISO = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-      const dayBookings = bookings.filter(b => b.date === dateISO);
-      const cell = document.createElement("div");
-      cell.classList.add("calendar-day");
-      cell.innerHTML = `<h4>${day}</h4>`;
-      dayBookings.forEach(b => {
-        const event = document.createElement("div");
-        event.classList.add("event", b.type);
-        event.textContent = b.customer || "Booking";
-        cell.appendChild(event);
-      });
-      cell.addEventListener("click", () => openModal(dateISO, dayBookings));
-      grid.appendChild(cell);
-    }
+  if (!bookings.length) {
+    container.innerHTML = "<p class='muted'>No bookings found for this month.</p>";
+    return;
   }
 
-  function openModal(date, list) {
-    modal.classList.add("active");
-    modalDate.textContent = `Bookings on ${date}`;
-    modalList.innerHTML = list.length
-      ? list.map(b => `<li>${b.customer} (${b.type === "delivery" ? "🟢 Delivery" : "🟡 Pickup"}) - $${b.total.toFixed(2)}</li>`).join("")
-      : "<li class='muted'>No bookings.</li>";
-  }
+  const grouped = groupByDate(bookings);
+  grouped.forEach(([date, items]) => {
+    const section = document.createElement("div");
+    section.className = "date-group";
+    const heading = document.createElement("h3");
+    heading.textContent = new Date(date).toDateString();
+    section.appendChild(heading);
 
-  closeModal.onclick = () => modal.classList.remove("active");
+    items.forEach(b => {
+      const event = document.createElement("div");
+      event.className = "event";
+      event.innerHTML = `
+        <div class="left">
+          <strong>${b.customer}</strong>
+          <span>${b.phone || ""}</span>
+          <span>${b.address || ""}</span>
+        </div>
+        <div class="right">
+          <div class="type ${b.type}">${b.type === "pickup" ? "🟡 Pickup" : "🟢 Delivery"}</div>
+          <div>${b.date}</div>
+          <div>$${b.total.toFixed(2)}</div>
+        </div>`;
+      section.appendChild(event);
+    });
 
-  // Sync updates automatically
-  window.addEventListener("bookingsUpdated", () => {
-    bookings = getBookings();
-    renderCalendar();
+    container.appendChild(section);
   });
+}
 
-  document.getElementById("prevMonth").onclick = () => {
-    current.setMonth(current.getMonth() - 1);
-    renderCalendar();
-  };
-  document.getElementById("nextMonth").onclick = () => {
-    current.setMonth(current.getMonth() + 1);
-    renderCalendar();
-  };
+// Filter logic
+const monthPicker = document.getElementById("monthPicker");
+const search = document.getElementById("search");
 
-  renderCalendar();
-});
+function filterBookings() {
+  let bookings = getBookings();
+  const month = monthPicker.value;
+  const q = search.value.toLowerCase();
+
+  if (month) {
+    bookings = bookings.filter(b => b.date.startsWith(month));
+  }
+  if (q) {
+    bookings = bookings.filter(b =>
+      b.customer.toLowerCase().includes(q) ||
+      b.type.toLowerCase().includes(q)
+    );
+  }
+  renderCalendar(bookings);
+}
+
+// Initial load
+filterBookings();
+monthPicker.addEventListener("input", filterBookings);
+search.addEventListener("input", filterBookings);
+window.addEventListener("bookingsUpdated", filterBookings);
 </script>
 </body>
 </html>
