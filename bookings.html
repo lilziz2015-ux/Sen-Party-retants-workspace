@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Bookings — Sen Party Rentals Pro</title>
-<link rel="stylesheet" href="assets/style.css">
-
+<link rel="stylesheet" href="assets/style.css" />
 <style>
 :root {
   --brand: #0078ff;
@@ -33,32 +32,62 @@ body {
   flex-direction: column;
   justify-content: space-between;
   position: fixed;
-  top: 0; left: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  bottom: 0;
   padding: 1rem;
   transition: transform 0.3s ease;
   z-index: 1000;
 }
 .sidebar.hidden { transform: translateX(-100%); }
 .sidebar .logo { text-align: center; }
-.sidebar img { width: 80px; border-radius: 50%; margin-bottom: 0.5rem; }
-.sidebar nav { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 1rem; }
-.sidebar nav a {
-  text-decoration: none; color: #1f2937; padding: 0.6rem 0.8rem;
-  border-radius: 6px; transition: 0.2s;
+.sidebar img {
+  width: 80px;
+  border-radius: 50%;
+  margin-bottom: 0.5rem;
 }
-.sidebar nav a:hover, .sidebar nav a.active {
-  background: #e6f0ff; color: var(--brand-dark); font-weight: 600;
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+.sidebar nav a {
+  text-decoration: none;
+  color: #1f2937;
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+.sidebar nav a:hover,
+.sidebar nav a.active {
+  background: #e6f0ff;
+  color: var(--brand-dark);
+  font-weight: 600;
 }
 
 /* Main */
-.main { flex: 1; margin-left: 260px; padding: 2rem; }
+.main {
+  flex: 1;
+  margin-left: 260px;
+  padding: 2rem;
+}
 .topbar {
-  display: flex; justify-content: space-between; align-items: center;
-  flex-wrap: wrap; margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
 }
 .menu-toggle {
-  display: none; background: var(--brand); color: #fff; border: none;
-  padding: 0.6rem 0.9rem; border-radius: 6px; font-size: 1.2rem; cursor: pointer;
+  display: none;
+  background: var(--brand);
+  color: #fff;
+  border: none;
+  padding: 0.6rem 0.9rem;
+  border-radius: 6px;
+  font-size: 1.2rem;
+  cursor: pointer;
 }
 .muted { color: var(--muted); }
 .card {
@@ -75,32 +104,59 @@ body {
 }
 .form-grid .wide { grid-column: 1 / -1; }
 input, select, textarea {
-  width: 100%; padding: 0.6rem; border: 1px solid #ddd; border-radius: 8px;
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
 }
 .toolbar {
-  display: flex; align-items: center; gap: 1rem; margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 .btn-primary {
-  background: var(--brand); color: #fff; border: none; border-radius: 6px;
-  padding: 0.7rem 1.2rem; cursor: pointer; font-weight: 600; transition: 0.2s;
+  background: var(--brand);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.7rem 1.2rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
 }
 .btn-primary:hover { background: var(--brand-dark); }
 .btn {
-  background: #e5e7eb; border: none; border-radius: 6px; padding: 0.7rem 1.2rem;
-  cursor: pointer; font-weight: 500;
+  background: #e5e7eb;
+  border: none;
+  border-radius: 6px;
+  padding: 0.7rem 1.2rem;
+  cursor: pointer;
+  font-weight: 500;
 }
 .btn:hover { background: #d1d5db; }
 table {
-  width: 100%; border-collapse: collapse; min-width: 700px;
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px;
 }
 th, td {
   padding: 0.75rem 1rem;
   text-align: left;
   border-bottom: 1px solid #e5e7eb;
 }
-th { background: #f3f4f6; color: #374151; font-weight: 600; }
+th {
+  background: #f3f4f6;
+  color: #374151;
+  font-weight: 600;
+}
 tr:hover { background: #f9fafb; }
-footer { text-align: center; font-size: 0.85rem; color: var(--muted); margin-top: 2rem; }
+footer {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: 2rem;
+}
 
 @media (max-width: 900px) {
   .main { margin-left: 0; }
@@ -192,22 +248,28 @@ footer { text-align: center; font-size: 0.85rem; color: var(--muted); margin-top
   </footer>
 </main>
 
-<script>
-// Sidebar toggle
-const sidebar = document.getElementById('sidebar');
-const toggleBtn = document.getElementById('menuToggle');
-toggleBtn.addEventListener('click', () => {
-  sidebar.classList.toggle('hidden');
-  sidebar.classList.toggle('show');
-});
-
-// Local Storage helpers
+<!-- Script -->
+<script type="module">
+// === Shared app.js logic ===
 function getBookings() {
   return JSON.parse(localStorage.getItem("spr.bookings") || "[]");
 }
 function saveBookings(data) {
   localStorage.setItem("spr.bookings", JSON.stringify(data));
+  window.dispatchEvent(new Event("bookingsUpdated"));
 }
+function deleteBookingItem(id) {
+  const data = getBookings().filter(b => b.id !== id);
+  saveBookings(data);
+}
+
+// === UI logic ===
+const sidebar = document.getElementById("sidebar");
+const toggleBtn = document.getElementById("menuToggle");
+toggleBtn.addEventListener("click", () => {
+  sidebar.classList.toggle("hidden");
+  sidebar.classList.toggle("show");
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   const table = document.getElementById("bookingsTable");
@@ -215,15 +277,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const search = document.getElementById("search");
 
   const els = {
-    name: b_name,
-    email: b_email,
-    phone: b_phone,
-    date: b_date,
-    type: b_type,
-    total: b_total,
-    deposit: b_deposit,
-    address: b_address,
-    notes: b_notes
+    name: b_name, email: b_email, phone: b_phone, date: b_date, type: b_type,
+    total: b_total, deposit: b_deposit, address: b_address, notes: b_notes
   };
 
   let bookings = getBookings();
@@ -241,19 +296,28 @@ document.addEventListener("DOMContentLoaded", () => {
       row.innerHTML = `
         <td>${b.date}</td>
         <td>${b.customer}</td>
-        <td>${b.type === 'pickup' ? '🟡 Pickup' : '🟢 Delivery'}</td>
+        <td>${b.type === "pickup" ? "🟡 Pickup" : "🟢 Delivery"}</td>
         <td>$${b.total.toFixed(2)}</td>
         <td>$${b.deposit.toFixed(2)}</td>
         <td>$${balance}</td>
         <td>
-          <button class="btn" onclick="editBooking(${b.id})">Edit</button>
-          <button class="btn" onclick="deleteBooking(${b.id})">Delete</button>
+          <button class="btn" data-edit="${b.id}">Edit</button>
+          <button class="btn" data-del="${b.id}">Delete</button>
         </td>`;
       table.appendChild(row);
     });
+
+    table.querySelectorAll("[data-edit]").forEach(btn => {
+      btn.onclick = () => editBooking(parseInt(btn.dataset.edit));
+    });
+    table.querySelectorAll("[data-del]").forEach(btn => {
+      btn.onclick = () => {
+        if (confirm("Delete this booking?")) deleteBookingItem(parseInt(btn.dataset.del));
+      };
+    });
   }
 
-  window.editBooking = (id) => {
+  function editBooking(id) {
     const b = bookings.find(x => x.id === id);
     if (!b) return;
     editId = id;
@@ -267,16 +331,7 @@ document.addEventListener("DOMContentLoaded", () => {
     els.address.value = b.address;
     els.notes.value = b.notes;
     formMsg.textContent = "Editing booking...";
-  };
-
-  window.deleteBooking = (id) => {
-    if (!confirm("Are you sure you want to delete this booking?")) return;
-    bookings = bookings.filter(x => x.id !== id);
-    saveBookings(bookings);
-    renderTable(bookings);
-    formMsg.textContent = "Booking deleted.";
-    setTimeout(() => formMsg.textContent = "", 1500);
-  };
+  }
 
   document.getElementById("btnSave").onclick = () => {
     const data = {
@@ -296,21 +351,19 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    if (editId) {
-      bookings = bookings.map(b => (b.id === editId ? data : b));
-      formMsg.textContent = "Booking updated ✓";
-    } else {
-      bookings.push(data);
-      formMsg.textContent = "Booking added ✓";
-    }
-    saveBookings(bookings);
-    renderTable(bookings);
+    const existing = getBookings();
+    const updated = existing.filter(b => b.id !== data.id);
+    updated.push(data);
+    saveBookings(updated);
+
+    formMsg.textContent = editId ? "Booking updated ✓" : "Booking added ✓";
+    editId = null;
     resetForm();
-    setTimeout(() => formMsg.textContent = "", 2000);
+    setTimeout(() => (formMsg.textContent = ""), 2000);
   };
 
   function resetForm() {
-    Object.values(els).forEach(el => el.value = el.tagName === "SELECT" ? "delivery" : "");
+    Object.values(els).forEach(el => (el.value = el.tagName === "SELECT" ? "delivery" : ""));
     els.total.value = 0;
     els.deposit.value = 0;
     editId = null;
@@ -321,12 +374,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   search.addEventListener("input", e => {
     const q = e.target.value.toLowerCase();
-    const filtered = bookings.filter(b =>
-      b.customer.toLowerCase().includes(q) ||
-      b.type.toLowerCase().includes(q) ||
-      b.date.toLowerCase().includes(q)
+    const filtered = bookings.filter(
+      b =>
+        b.customer.toLowerCase().includes(q) ||
+        b.type.toLowerCase().includes(q) ||
+        b.date.toLowerCase().includes(q)
     );
     renderTable(filtered);
+  });
+
+  // Listen for sync from other pages
+  window.addEventListener("bookingsUpdated", () => {
+    bookings = getBookings();
+    renderTable(bookings);
   });
 
   renderTable(bookings);
