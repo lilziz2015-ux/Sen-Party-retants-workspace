@@ -42,6 +42,19 @@
     </div>
   </header>
 
+  <!-- Reminder Toolbar -->
+  <section class="card">
+    <div class="card-header">
+      <h2>Reminders & Actions</h2>
+      <div style="display:flex; gap:.5rem; flex-wrap:wrap">
+        <button class="btn" onclick="checkReminders()">↻ Check Reminders</button>
+        <button class="btn-primary" onclick="emailAllDue()">✉️ Email All Due</button>
+        <button class="btn-outline" onclick="smsAllDue()">📱 SMS All Due</button>
+        <button class="btn-success" onclick="window.location.href='bookings.html'">+ Add Booking</button>
+      </div>
+    </div>
+  </section>
+
   <!-- Stats Overview -->
   <section class="stats-grid">
     <div class="card stat">
@@ -112,9 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     options: {
       responsive: true,
-      plugins: {
-        legend: { display: false },
-      },
+      plugins: { legend: { display: false } },
       scales: {
         y: { beginAtZero: true, grid: { color: '#eef2f7' } },
         x: { grid: { display: false } }

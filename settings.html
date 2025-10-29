@@ -74,7 +74,30 @@
       </div>
     </div>
   </section>
-
+<section class="card">
+  <h2>Notifications</h2>
+  <p class="muted" style="margin:-4px 0 10px">
+    Email uses <b>EmailJS</b> (no server needed). SMS uses an optional <b>webhook URL</b> (Zapier/Make or Twilio Function).
+  </p>
+  <div class="form-grid">
+    <div>
+      <label>EmailJS Service ID</label>
+      <input id="ejService" placeholder="service_xxx">
+    </div>
+    <div>
+      <label>EmailJS Template ID</label>
+      <input id="ejTemplate" placeholder="template_xxx">
+    </div>
+    <div>
+      <label>EmailJS Public Key</label>
+      <input id="ejPublic" placeholder="YOUR_PUBLIC_KEY">
+    </div>
+    <div class="wide">
+      <label>SMS Webhook URL (optional)</label>
+      <input id="smsWebhook" placeholder="https://hooks.zapier.com/... or your Twilio Function URL">
+    </div>
+  </div>
+</section>
   <section class="card">
     <h2>Invoice Settings</h2>
     <div class="form-grid">
